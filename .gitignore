@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Ignore large DATA files
 DATA_*
 
 # Distribution / packaging
