@@ -3,9 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Ignore large DATA and CHAINS files
+# Ignore large files
 DATA_*
 CHAINS_*
+CUBES_*
+MATRIX_*
 
 # Distribution / packaging
 .Python
