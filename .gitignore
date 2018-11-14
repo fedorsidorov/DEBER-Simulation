@@ -4,8 +4,8 @@ __pycache__/
 *$py.class
 
 # Ignore large files
-DATA_*
-CHAINS_*
+e_DATA
+CHAINS*
 CUBES_*
 MATRIX_*
 
