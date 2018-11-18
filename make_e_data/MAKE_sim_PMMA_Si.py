@@ -7,16 +7,16 @@ import my_variables as mv
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
-os.chdir(mv.sim_path_MAC + 'make_e_data')
+#os.chdir(mv.sim_path_MAC + 'make_e_data')
 
 #%%
 ## Usual
-n_files = 1
-n_tracks = 10
+n_files = 1500
+n_tracks = 100
 
 ## Bruk
-d_PMMA = 80
-E0 = 20e+3
+#d_PMMA = 80
+#E0 = 20e+3
 
 ## Sharma
 #d_PMMA = 160
@@ -35,8 +35,12 @@ E0 = 20e+3
 #d_PMMA = 1000
 #E0 = 20e+3
 
+## experiment
+d_PMMA = 122
+E0 = 20e+3
+
 D = 0
-num = 0
+num = 956
 
 while num < n_files:
 #while num < 1:
@@ -46,8 +50,8 @@ while num < n_files:
     DATA_P = DATA[np.where(DATA[:, mv.atom_id] != mv.Si)[0], :]
     DATA_Pn = DATA_P[np.where(DATA_P[:, mv.coll_id] > mv.elastic)[0], :]
     
-    fname = 'DATA_Pn_20keV_80nm/DATA_Pn_' + str(num) + '.npy'
-#    np.save(fname, DATA_Pn)
+    fname = '../e_DATA/DATA_Pn_20keV_122nm/DATA_Pn_' + str(num) + '.npy'
+    np.save(fname, DATA_Pn)
     
     print('file ' + fname + ' is saved')
 

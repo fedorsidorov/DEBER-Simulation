@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
-os.chdir(mv.sim_path_MAC + 'make_chains')
+#os.chdir(mv.sim_path_MAC + 'make_chains')
 
 #%%
 def get_L_array(n_chains):
@@ -79,7 +79,7 @@ theta = np.deg2rad(180 - 109)
 #n_chains = len(L_arr)
 n_chains = 10000
 
-chain_num = 0
+chain_num = 7961
 
 chains_list = []
 
@@ -142,8 +142,9 @@ while chain_num < n_chains:
         
         i += 1
     
+    dirname = '../CHAINS/CHAINS_950K_122nm_10k/'
     filename = 'chain_' + str(chain_num) + '.npy'
-    np.save('chains_experiment/' + filename, chain_coords)
+    np.save(dirname + filename, chain_coords)
     print(filename + ' is saved')
     chains_list.append(chain_coords)
     chain_num += 1
