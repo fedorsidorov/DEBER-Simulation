@@ -5,10 +5,10 @@ __pycache__/
 
 # Ignore large files
 e_DATA
-DATA_
+DATA*
 CHAINS*
 CUBES_*
-MATRIX_*
+MATRIX*
 
 # Distribution / packaging
 .Python

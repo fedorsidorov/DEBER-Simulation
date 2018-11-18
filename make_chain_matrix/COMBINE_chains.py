@@ -2,24 +2,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from random import random
-
-sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
-            'Study/Simulation/'
-#sim_path = '/home/fedor/Yandex.Disk/Study/Simulation/'
-             
-os.chdir(sim_path + 'mapping')
-
-import sys
-sys.path.append(sim_path + 'MODULES')
-
 import importlib
-
 import my_functions as mf
+import my_variables as mv
+
 mf = importlib.reload(mf)
+mv = importlib.reload(mv)
+os.chdir(mv.sim_path_MAC + 'make_chain_matrix')
 
 #%%
-source_dir = '../make_chains/CHAINS_Sharma/'
+source_dir = mv.sim_path_MAC + 'CHAINS/CHAINS_950K_122nm_10k'
 dest_dir = 'Sharma/CHAINS_Sharma/'
 
 N_chains = 10000

@@ -64,9 +64,13 @@ inv_pos = 1
 c_Z, c_XY, c_x, c_y, c_z, n_mon, pos, mon_type = 0, 1, 2, 3, 4, 5, 6, 7
 
 #%%
-sim_path_MAC = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
-            'Study/Simulation/'
-sim_path_FTIAN = '/home/fedor/Yandex.Disk/Study/Simulation/'
+#sim_path_MAC = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
+#            'Study/Simulation/'
+
+sim_path_MAC = '/Users/fedor/Documents/DEBER-Simulation/'
+
+#sim_path_FTIAN = '/home/fedor/Yandex.Disk/Study/Simulation/'
+
 
 #%% Sharma cube parameters
 cube_size = 10.
