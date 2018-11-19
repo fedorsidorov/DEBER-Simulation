@@ -2,20 +2,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
-sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
-            'Study/Simulation/'
-#sim_path = '/home/fedor/Yandex.Disk/Study/Simulation/'
-             
-os.chdir(sim_path + 'mapping')
-
-import sys
-sys.path.append(sim_path + 'MODULES')
-
 import importlib
-
 import my_functions as mf
+import my_variables as mv
+
 mf = importlib.reload(mf)
+mv = importlib.reload(mv)
+os.chdir(mv.sim_path_MAC + 'make_chain_matrix')
 
 #%%
 ## cube parameters
@@ -29,7 +22,7 @@ eps = 1e-3
 ## min and max coordinates
 x_min, x_max = 0., 100.
 y_min, y_max = 0., 100.
-z_min, z_max = 0., 160.
+z_min, z_max = 0., 122.
 
 ## cubes numbers
 n_x = int(np.round((x_max - x_min) / cube_size))
@@ -41,22 +34,19 @@ n_xy = n_x * n_y
 n_total = n_x * n_y * n_z
 
 ## directories
-source_dir = 'Sharma/CHAINS_Sharma/'
-dest_dir = 'Sharma/CHAINS_Sharma_cubed/'
+source_dir = mv.sim_path_MAC + 'CHAINS/CHAINS_950K_122nm_10k_shifted/'
+dest_dir = mv.sim_path_MAC + 'CHAINS/CHAINS_950K_122nm_10k_cubed/'
 
 #%%
-N_chains = 12709
+N_chains = 11701
 
-#n0 = 6776
-#n1 = n0 + 1
+#N0 = 0
+#N1 = N0 + 2000
 
-N0 = 0
-N1 = N0 + 2000
-
-#for n in range(N_chains):
-for n in range(N0, N_chains):
+for n in range(N_chains):
+#for n in range(N0, N_chains):
     
-    if n % 100 == 0:
+    if n % 1000 == 0:
         print(n, 'chains are cubed')
     
     fname = 'chain_shift_' + str(n) + '.npy'

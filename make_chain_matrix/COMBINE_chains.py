@@ -11,8 +11,8 @@ mv = importlib.reload(mv)
 os.chdir(mv.sim_path_MAC + 'make_chain_matrix')
 
 #%%
-source_dir = mv.sim_path_MAC + 'CHAINS/CHAINS_950K_122nm_10k/'
-dest_dir = mv.sim_path_MAC + 'CHAINS/CHAINS_950K_122nm_10k_shifted/'
+source_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/CHAINS_950K_122nm_10k_raw/'
+dest_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_400x100x122/'
 
 N_chains = 10000
 
@@ -38,7 +38,8 @@ plt.grid()
 plt.show()
 
 #%% prepare histograms
-l_xyz = np.array((100, 100, 122))
+#l_xyz = np.array((100, 100, 122))
+l_xyz = np.array((400, 100, 122))
 space = 100
 
 x_beg, y_beg, z_beg = (0, 0, 0)
@@ -68,6 +69,15 @@ V = np.prod(l_xyz) * (1e-7)**3 ## cm^3
 m_mon = 1.66e-22 ## g
 rho = 1.19 ## g / cm^3
 
+x_min = []
+x_max = []
+
+y_min = []
+y_max = []
+
+z_min = []
+z_max = []
+
 i = 0
 
 while True:
@@ -82,21 +92,30 @@ while True:
     else:
         
         ii = i % len(chain_bank)
-        new_chain = chain_bank[ii]
+        now_chain = chain_bank[ii]
         
-        x_shift = mf.uniform(-space, l_xyz[0] + space)
-        y_shift = mf.uniform(-space, l_xyz[0] + space)
+        x_shift = mf.uniform(-space, x_end + space)
+        y_shift = mf.uniform(-space, y_end + space)
         
-        new_chain_shift = new_chain + np.array((x_shift, y_shift, 0))
+        now_chain_shift = now_chain + np.array((x_shift, y_shift, 0))
         
-        if new_chain_shift.max(axis=0)[0] < x_beg or new_chain_shift.max(axis=0)[1] < y_beg\
-        or new_chain_shift.min(axis=0)[0] > x_end or new_chain_shift.min(axis=0)[1] > y_end:
+        x_min.append(now_chain_shift[:, 0].min())
+        x_max.append(now_chain_shift[:, 0].max())
+        
+        y_min.append(now_chain_shift[:, 1].min())
+        y_max.append(now_chain_shift[:, 1].max())
+        
+        z_min.append(now_chain_shift[:, 2].min())
+        z_max.append(now_chain_shift[:, 2].max())
+        
+        if now_chain_shift.max(axis=0)[0] < x_beg or now_chain_shift.max(axis=0)[1] < y_beg\
+        or now_chain_shift.min(axis=0)[0] > x_end or now_chain_shift.min(axis=0)[1] > y_end:
             continue
         
-        chain_list.append(new_chain_shift)
+        chain_list.append(now_chain_shift)
         
-        hist_total += np.histogramdd(new_chain_shift, bins=bins_total)[0]
-        hist_prec += np.histogramdd(new_chain_shift, bins=bins_prec)[0]
+        hist_total += np.histogramdd(now_chain_shift, bins=bins_total)[0]
+        hist_prec += np.histogramdd(now_chain_shift, bins=bins_prec)[0]
         
     i += 1
 
@@ -113,11 +132,6 @@ for chain in chain_list:
     mf.upd_progress_bar(i, len(chain_list))
     np.save(dest_dir + 'chain_shift_' + str(i) + '.npy', chain)
     i += 1
-
-#%% check n_mon in 0.28 nm cube
-#array_mono = np.reshape(hist_mono, (np.prod(np.shape(hist_mono)),))
-#array_mono_hist = np.histogram(array_mono, bins=10)[0]
-#mf.print_histogram(array_mono, user_bins=10, is_normed=False)
 
 #%% cut chains to cube shape
 chain_cut_list = []
@@ -138,8 +152,7 @@ for chain in chain_list:
             beg = i + 1
 
 #%% get nice 3D picture
-l_xy = len(np.arange(0, 101, 1))
-l_z = len(np.arange(0, 123, 1))
+l_x, l_y, l_z = l_xyz
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -147,20 +160,20 @@ ax = fig.add_subplot(111, projection='3d')
 for chain in chain_list[0:-1:50]:
     ax.plot(chain[:, 0], chain[:, 1], chain[:, 2])
 
-ax.plot(np.arange(0, 101, 1), np.ones(l_xy)*0, np.ones(l_xy)*0, 'k')
-ax.plot(np.arange(0, 101, 1), np.ones(l_xy)*100, np.ones(l_xy)*0, 'k')
-ax.plot(np.arange(0, 101, 1), np.ones(l_xy)*0, np.ones(l_xy)*122, 'k')
-ax.plot(np.arange(0, 101, 1), np.ones(l_xy)*100, np.ones(l_xy)*122, 'k')
+ax.plot(np.linspace(x_beg, x_end, l_x), np.ones(l_x)*y_beg, np.ones(l_x)*z_beg, 'k')
+ax.plot(np.linspace(x_beg, x_end, l_x), np.ones(l_x)*y_end, np.ones(l_x)*z_beg, 'k')
+ax.plot(np.linspace(x_beg, x_end, l_x), np.ones(l_x)*y_beg, np.ones(l_x)*z_end, 'k')
+ax.plot(np.linspace(x_beg, x_end, l_x), np.ones(l_x)*y_end, np.ones(l_x)*z_end, 'k')
 
-ax.plot(np.ones(l_xy)*0, np.arange(0, 101, 1), np.ones(l_xy)*0, 'k')
-ax.plot(np.ones(l_xy)*100, np.arange(0, 101, 1), np.ones(l_xy)*0, 'k')
-ax.plot(np.ones(l_xy)*0, np.arange(0, 101, 1), np.ones(l_xy)*122, 'k')
-ax.plot(np.ones(l_xy)*100, np.arange(0, 101, 1), np.ones(l_xy)*122, 'k')
+ax.plot(np.ones(l_y)*x_beg, np.linspace(y_beg, y_end, l_y), np.ones(l_y)*z_beg, 'k')
+ax.plot(np.ones(l_y)*x_end, np.linspace(y_beg, y_end, l_y), np.ones(l_y)*z_beg, 'k')
+ax.plot(np.ones(l_y)*x_beg, np.linspace(y_beg, y_end, l_y), np.ones(l_y)*z_end, 'k')
+ax.plot(np.ones(l_y)*x_end, np.linspace(y_beg, y_end, l_y), np.ones(l_y)*z_end, 'k')
 
-ax.plot(np.ones(l_z)*0, np.ones(l_z)*0, np.arange(0, 123, 1), 'k')
-ax.plot(np.ones(l_z)*100, np.ones(l_z)*0, np.arange(0, 123, 1), 'k')
-ax.plot(np.ones(l_z)*0, np.ones(l_z)*100, np.arange(0, 123, 1), 'k')
-ax.plot(np.ones(l_z)*100, np.ones(l_z)*100, np.arange(0, 123, 1), 'k')
+ax.plot(np.ones(l_z)*x_beg, np.ones(l_z)*y_beg, np.linspace(z_beg, z_end, l_z), 'k')
+ax.plot(np.ones(l_z)*x_end, np.ones(l_z)*y_beg, np.linspace(z_beg, z_end, l_z), 'k')
+ax.plot(np.ones(l_z)*x_beg, np.ones(l_z)*y_end, np.linspace(z_beg, z_end, l_z), 'k')
+ax.plot(np.ones(l_z)*x_end, np.ones(l_z)*y_end, np.linspace(z_beg, z_end, l_z), 'k')
 
 plt.xlim(x_beg, x_end)
 plt.ylim(y_beg, y_end)
