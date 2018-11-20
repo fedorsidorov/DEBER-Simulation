@@ -12,24 +12,29 @@ os.chdir(mv.sim_path_MAC + 'make_chain_matrix')
 
 #%%
 source_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/CHAINS_950K_122nm_10k_raw/'
-dest_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_400x100x122/'
+dest_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_400x100x122_center/'
 
 N_chains = 10000
 
-chain_bank = [[] for i in range(N_chains)]
-L_arr = np.zeros(N_chains)
+chain_bank = []
+L_arr = []
 
 ## load chains into bank
 for i in range(N_chains):
     
     mf.upd_progress_bar(i, N_chains)
     
-    chain_bank[i] = np.load(source_dir + 'chain_' + str(i % len(chain_bank)) + '.npy')
-    L_arr[i] = len(chain_bank[i])
+    now_chain = np.load(source_dir + 'chain_' + str(i) + '.npy')
+    
+    if len(now_chain) > 1e+4:
+        continue
+    
+    chain_bank.append(now_chain)
+    L_arr.append(len(now_chain))
     
 #%% check log_mw
 log_mw = np.log10(L_arr * 100)
-plt.hist(log_mw)
+plt.hist(log_mw, bins=20)
 plt.title('Chain mass distribution')
 plt.xlabel('log(m$_w$)')
 plt.ylabel('probability')
@@ -43,6 +48,7 @@ l_xyz = np.array((400, 100, 122))
 space = 100
 
 x_beg, y_beg, z_beg = (0, 0, 0)
+x_beg, y_beg, z_beg = (-l_xyz[0]/2, 0, 0)
 xyz_beg = np.array((x_beg, y_beg, z_beg))
 xyz_end = xyz_beg + l_xyz
 x_end, y_end, z_end = xyz_end
@@ -82,7 +88,7 @@ i = 0
 
 while True:
     
-    if i % 1000 == 0:
+    if i % 10000 == 0:
         print(i, 'chains are added')
     
     if np.sum(hist_total) * m_mon / V >= rho:
@@ -94,10 +100,14 @@ while True:
         ii = i % len(chain_bank)
         now_chain = chain_bank[ii]
         
-        x_shift = mf.uniform(-space, x_end + space)
-        y_shift = mf.uniform(-space, y_end + space)
+        x_shift = mf.uniform(x_beg - space, x_end + space)
+        y_shift = mf.uniform(y_beg - space, y_end + space)
         
         now_chain_shift = now_chain + np.array((x_shift, y_shift, 0))
+        
+        if now_chain_shift.max(axis=0)[0] < x_beg or now_chain_shift.max(axis=0)[1] < y_beg\
+        or now_chain_shift.min(axis=0)[0] > x_end or now_chain_shift.min(axis=0)[1] > y_end:
+            continue
         
         x_min.append(now_chain_shift[:, 0].min())
         x_max.append(now_chain_shift[:, 0].max())
@@ -107,10 +117,6 @@ while True:
         
         z_min.append(now_chain_shift[:, 2].min())
         z_max.append(now_chain_shift[:, 2].max())
-        
-        if now_chain_shift.max(axis=0)[0] < x_beg or now_chain_shift.max(axis=0)[1] < y_beg\
-        or now_chain_shift.min(axis=0)[0] > x_end or now_chain_shift.min(axis=0)[1] > y_end:
-            continue
         
         chain_list.append(now_chain_shift)
         

@@ -29,12 +29,7 @@ x_bins_2nm = np.arange(x_beg, x_end + 1, step_2nm)
 y_bins_2nm = np.arange(y_beg, y_end + 1, step_2nm)
 z_bins_2nm = np.arange(z_beg, z_end + 1, step_2nm)
 
-n_mon_max = 100
-
-#chain_matrix = - np.ones((len(x_bins_2nm), len(y_bins_2nm), len(z_bins_nm)), dtype=np.int16)
-
-pos_matrix = np.zeros(l_xyz, dtype=np.uint8)
-chain_matrix = np.zeros((*l_xyz, n_mon_max, 3), dtype=np.uint16)
+chain_inv_matrix = - np.ones((N_0, max_len, 3), dtype=np.uint8)
 
 #%%
 for chain_num in range(N_0):
@@ -54,26 +49,8 @@ for chain_num in range(N_0):
         y_ind = mf.get_closest_el_ind(y_bins_2nm, now_y)
         z_ind = mf.get_closest_el_ind(z_bins_2nm, now_z)
         
-        if mon_pos == 0:
-            mon_type = -1
-        elif mon_pos == len(now_chain) - 1:
-            mon_type = 1
-        else:
-            mon_type = 0
-        
-        chain_matrix[x_ind, y_ind, z_ind, pos_matrix[x_ind, y_ind, z_ind]] =\
-            chain_num, mon_pos, mon_type
+        chain_inv_matrix[chain_num, mon_pos, :] = x_ind, y_ind, z_ind
 
 #%%
-print('chain_matrix size, Gb:', chain_matrix.nbytes / 1024**3)
-np.save('MATRIX_chain.npy', chain_matrix)        
-
-#%%
-cim = np.load('MATRIX_chain_inv.npy')
-
-#%%
-cim_1 = cim[2]
-
-
-
-
+print('chain_inv_matrix size, Gb:', chain_inv_matrix.nbytes / 1024**3)
+np.save('MATRIX_chain_inv_int8.npy', chain_inv_matrix)        
