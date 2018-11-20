@@ -53,4 +53,7 @@ for chain_num in range(N_0):
 
 #%%
 print('chain_inv_matrix size, Gb:', chain_inv_matrix.nbytes / 1024**3)
-np.save('MATRIX_chain_inv_int8.npy', chain_inv_matrix)        
+np.save('MATRIX_chain_inv.npy', chain_inv_matrix)
+
+#%%
+a = np.load('MATRIX_chain_inv_int8.npy')

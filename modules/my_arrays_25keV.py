@@ -1,8 +1,8 @@
 #%% Import
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
-path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/Study/Simulation/arrays_25keV/'
+path = '/Users/fedor/Documents/DEBER-Simulation/arrays_25keV/'
 #path = '/home/fedor/Yandex.Disk/Study/Simulation/arrays_25keV/'
 
 atoms = ['H', 'C', 'O', 'Si']

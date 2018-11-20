@@ -9,6 +9,7 @@ DATA*
 CHAINS*
 CUBES_*
 MATRIX*
+arrays_100GeV
 
 # Distribution / packaging
 .Python
