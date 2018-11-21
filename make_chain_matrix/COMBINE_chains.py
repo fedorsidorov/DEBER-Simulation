@@ -12,12 +12,14 @@ os.chdir(mv.sim_path_MAC + 'make_chain_matrix')
 
 #%%
 source_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/CHAINS_950K_122nm_10k_raw/'
-dest_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_400x100x122_center/'
+dest_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_600x100x122_center/'
 
 N_chains = 10000
 
 chain_bank = []
-L_arr = []
+L_list = []
+
+max_len = 0
 
 ## load chains into bank
 for i in range(N_chains):
@@ -29,12 +31,23 @@ for i in range(N_chains):
     if len(now_chain) > 1e+4:
         continue
     
-    chain_bank.append(now_chain)
-    L_arr.append(len(now_chain))
+    if len(now_chain) > max_len:
+        max_len = len(now_chain)
     
+    chain_bank.append(now_chain)
+    L_list.append(len(now_chain))
+
+L_arr = np.array(L_list)
+
 #%% check log_mw
 log_mw = np.log10(L_arr * 100)
-plt.hist(log_mw, bins=20)
+plt.hist(log_mw, bins=20, label='sample', normed=True)
+
+x_FS = np.load(mv.sim_path_MAC + 'L_distribution_simulation/x_FS.npy')
+y_FS = np.load(mv.sim_path_MAC + 'L_distribution_simulation/y_FS.npy')
+
+plt.plot(np.log10(x_FS), y_FS/y_FS.max()*0.8, label='model')
+
 plt.title('Chain mass distribution')
 plt.xlabel('log(m$_w$)')
 plt.ylabel('probability')
@@ -43,8 +56,7 @@ plt.grid()
 plt.show()
 
 #%% prepare histograms
-#l_xyz = np.array((100, 100, 122))
-l_xyz = np.array((400, 100, 122))
+l_xyz = np.array((600, 100, 122))
 space = 100
 
 x_beg, y_beg, z_beg = (0, 0, 0)
@@ -58,7 +70,6 @@ step_mono = 0.28
 
 bins_total = np.array(np.hstack((xyz_beg.reshape(3, 1), xyz_end.reshape(3, 1))))
 
-#%%
 x_bins_prec = np.arange(x_beg, x_end + 1, step_prec)
 y_bins_prec = np.arange(y_beg, y_end + 1, step_prec)
 z_bins_prec = np.arange(z_beg, z_end + 1, step_prec)
@@ -68,7 +79,7 @@ bins_prec = [x_bins_prec, y_bins_prec, z_bins_prec]
 hist_total = np.zeros((1, 1, 1))
 hist_prec = np.zeros((len(x_bins_prec) - 1, len(y_bins_prec) - 1, len(z_bins_prec) - 1))
 
-# create chain_list and check density
+#%% create chain_list and check density
 chain_list = []
 
 V = np.prod(l_xyz) * (1e-7)**3 ## cm^3
@@ -88,7 +99,7 @@ i = 0
 
 while True:
     
-    if i % 10000 == 0:
+    if i % 1000 == 0:
         print(i, 'chains are added')
     
     if np.sum(hist_total) * m_mon / V >= rho:

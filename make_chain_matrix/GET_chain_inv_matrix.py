@@ -1,6 +1,5 @@
 #%% Import
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 import importlib
 import my_functions as mf
@@ -11,12 +10,12 @@ mv = importlib.reload(mv)
 os.chdir(mv.sim_path_MAC + 'make_chain_matrix')
 
 #%%
-source_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_400x100x122_center/'
+source_dir = mv.sim_path_MAC + 'CHAINS/950K_122nm/comb_600x100x122_center/'
 
-N_0 = 42755
+N_0 = 63306
 max_len = 9780
 
-l_xyz = np.array((400, 100, 122))
+l_xyz = np.array((600, 100, 122))
 
 x_beg, y_beg, z_beg = (-l_xyz[0]/2, 0, 0)
 xyz_beg = np.array((x_beg, y_beg, z_beg))
@@ -29,7 +28,7 @@ x_bins_2nm = np.arange(x_beg, x_end + 1, step_2nm)
 y_bins_2nm = np.arange(y_beg, y_end + 1, step_2nm)
 z_bins_2nm = np.arange(z_beg, z_end + 1, step_2nm)
 
-chain_inv_matrix = - np.ones((N_0, max_len, 3), dtype=np.uint8)
+chain_inv_matrix = - np.ones((N_0, max_len, 3), dtype=np.uint16)
 
 #%%
 for chain_num in range(N_0):
@@ -57,3 +56,11 @@ np.save('MATRIX_chain_inv.npy', chain_inv_matrix)
 
 #%%
 a = np.load('MATRIX_chain_inv_int8.npy')
+
+#%%
+a = chain_inv_matrix[0]
+
+
+
+
+
