@@ -326,75 +326,75 @@ def delete_nan_rows(array):
     result_arr = np.delete(array, np.where(np.isnan(array[:, 0])), axis=0)
     return result_arr
 
-def add_xy_rotation(arr, phi):
-    rot_mat = np.mat([[np.cos(phi), -np.sin(phi)],
-                      [np.sin(phi),  np.cos(phi)]])
-    result = np.dot(rot_mat, np.mat(arr).transpose())
-    return np.array(result.transpose())
-
-
-def rotate_DATA(DATA, phi=2*np.pi*random()):
-#    DATA[:, 5:7] = add_xy_rotation(DATA[:, 5:7], 2 * np.pi * random())
-    DATA[:, 5:7] = add_xy_rotation(DATA[:, 5:7], phi)
-    return DATA
-
-
-def add_xy_shift(DATA, tr_num, x_shift, y_shift):
-    
-    ## get indices wuth current track
-    inds = np.where(DATA[:, 0] == tr_num)
-    
-    ## make primary shift
-    for i in inds[0]:
-        DATA[i, 5] += x_shift
-        DATA[i, 6] += y_shift
-    
-    ## get indices with 1st gen of 2nd electrons
-    inds_2nd = np.where(DATA[:, 1] == tr_num)[0]
-    
-    ## if no 2ndaries, return DATA
-    if len(inds_2nd) == 0:
-        return
-#        return DATA
-    
-    ## else RECURSION!
-    else:
-        ## find tr_nums with 2ndaries as primaries
-        tr_nums_2nd = np.unique(DATA[inds_2nd, 0])
-        
-        ## for every tr_num make recursive call
-        for tr_num_2nd in tr_nums_2nd:
-#            DATA = add_xy_shift(DATA, tr_num_2nd, x_shift, y_shift)
-            add_xy_shift(DATA, tr_num_2nd, x_shift, y_shift)
-        
-#        return DATA
-
-
-def shift_DATA(DATA, xlim, ylim):
-    n_tr_prim = int(DATA[np.where(np.isnan(DATA[:, 1]))][-1, 0] + 1)
-    for track_num in range(n_tr_prim):
-        
-        x0, y0 = uniform(*xlim), uniform(*ylim)          
-        add_xy_shift(DATA, track_num, x0, y0)
-        
-        '''
-            ## in case of only elastic events in PMMA
-            if len(np.where(DATA[:, 0] == track_num)[0]) == 0:
-                continue
-            ## in normal case
-            else:
-                x0, y0 = uniform(*xlim), uniform(*ylim)          
-#                DATA = add_xy_shift(DATA, track_num, x0, y0)
-                add_xy_shift(DATA, track_num, x0, y0)
-        '''
+#def add_xy_rotation(arr, phi):
+#    rot_mat = np.mat([[np.cos(phi), -np.sin(phi)],
+#                      [np.sin(phi),  np.cos(phi)]])
+#    result = np.dot(rot_mat, np.mat(arr).transpose())
+#    return np.array(result.transpose())
+#
+#
+#def rotate_DATA(DATA, phi=2*np.pi*random()):
+##    DATA[:, 5:7] = add_xy_rotation(DATA[:, 5:7], 2 * np.pi * random())
+#    DATA[:, 5:7] = add_xy_rotation(DATA[:, 5:7], phi)
 #    return DATA
-
-
-def get_n_electrons(dose_C_cm2, square_side_nm):
-    q_el_C = 1.6e-19
-    A_cm2 = (square_side_nm * 1e-7)**2
-    Q_C = dose_C_cm2 * A_cm2
-    return int(np.round(Q_C / q_el_C))
+#
+#
+#def add_xy_shift(DATA, tr_num, x_shift, y_shift):
+#    
+#    ## get indices wuth current track
+#    inds = np.where(DATA[:, 0] == tr_num)
+#    
+#    ## make primary shift
+#    for i in inds[0]:
+#        DATA[i, 5] += x_shift
+#        DATA[i, 6] += y_shift
+#    
+#    ## get indices with 1st gen of 2nd electrons
+#    inds_2nd = np.where(DATA[:, 1] == tr_num)[0]
+#    
+#    ## if no 2ndaries, return DATA
+#    if len(inds_2nd) == 0:
+#        return
+##        return DATA
+#    
+#    ## else RECURSION!
+#    else:
+#        ## find tr_nums with 2ndaries as primaries
+#        tr_nums_2nd = np.unique(DATA[inds_2nd, 0])
+#        
+#        ## for every tr_num make recursive call
+#        for tr_num_2nd in tr_nums_2nd:
+##            DATA = add_xy_shift(DATA, tr_num_2nd, x_shift, y_shift)
+#            add_xy_shift(DATA, tr_num_2nd, x_shift, y_shift)
+#        
+##        return DATA
+#
+#
+#def shift_DATA(DATA, xlim, ylim):
+#    n_tr_prim = int(DATA[np.where(np.isnan(DATA[:, 1]))][-1, 0] + 1)
+#    for track_num in range(n_tr_prim):
+#        
+#        x0, y0 = uniform(*xlim), uniform(*ylim)          
+#        add_xy_shift(DATA, track_num, x0, y0)
+#        
+#        '''
+#            ## in case of only elastic events in PMMA
+#            if len(np.where(DATA[:, 0] == track_num)[0]) == 0:
+#                continue
+#            ## in normal case
+#            else:
+#                x0, y0 = uniform(*xlim), uniform(*ylim)          
+##                DATA = add_xy_shift(DATA, track_num, x0, y0)
+#                add_xy_shift(DATA, track_num, x0, y0)
+#        '''
+##    return DATA
+#
+#
+#def get_n_electrons(dose_C_cm2, square_side_nm):
+#    q_el_C = 1.6e-19
+#    A_cm2 = (square_side_nm * 1e-7)**2
+#    Q_C = dose_C_cm2 * A_cm2
+#    return int(np.round(Q_C / q_el_C))
     
     
     

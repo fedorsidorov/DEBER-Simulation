@@ -3,15 +3,6 @@ import numpy as np
 import importlib
 import matplotlib.pyplot as plt
 import os
-sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
-            'Study/Simulation/'
-#sim_path = '/home/fedor/Yandex.Disk/Study/Simulation/'
-             
-os.chdir(sim_path + 'make_e_data')
-
-import sys
-sys.path.append(sim_path + 'MODULES')
-
 import my_functions as mf
 mf = importlib.reload(mf)
 #import matplotlib.pyplot as plt

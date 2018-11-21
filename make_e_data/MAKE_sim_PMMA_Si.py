@@ -11,7 +11,7 @@ os.chdir(mv.sim_path_MAC + 'make_e_data')
 
 #%%
 ## Usual
-n_files = 2500
+n_files = 3000
 n_tracks = 100
 
 ## Bruk
@@ -40,7 +40,7 @@ d_PMMA = 122
 E0 = 20e+3
 
 D = 0
-num = 1630
+num = 1922
 
 while num < n_files:
 #while num < 1:

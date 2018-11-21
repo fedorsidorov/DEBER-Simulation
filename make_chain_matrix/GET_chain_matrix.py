@@ -29,10 +29,16 @@ x_bins_2nm = np.arange(x_beg, x_end + 1, step_2nm)
 y_bins_2nm = np.arange(y_beg, y_end + 1, step_2nm)
 z_bins_2nm = np.arange(z_beg, z_end + 1, step_2nm)
 
+x_grid_2nm = (x_bins_2nm[:-1] + x_bins_2nm[1:]) / 2
+y_grid_2nm = (y_bins_2nm[:-1] + y_bins_2nm[1:]) / 2
+z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
+
 n_mon_max = 400
 
-pos_matrix = np.zeros(l_xyz, dtype=np.uint16)
-chain_matrix = - np.ones((*l_xyz, n_mon_max, 3), dtype=np.uint16)
+shape_arr = len(x_grid_2nm), len(y_grid_2nm), len(z_grid_2nm)
+
+pos_matrix = np.zeros(shape_arr, dtype=np.uint16)
+chain_matrix = - np.ones((*shape_arr, n_mon_max, 3), dtype=np.uint16)
 
 #%%
 for chain_num in range(N_0):
@@ -48,9 +54,9 @@ for chain_num in range(N_0):
         
         now_x, now_y, now_z = mon_line
         
-        x_ind = mf.get_closest_el_ind(x_bins_2nm, now_x)
-        y_ind = mf.get_closest_el_ind(y_bins_2nm, now_y)
-        z_ind = mf.get_closest_el_ind(z_bins_2nm, now_z)
+        x_ind = mf.get_closest_el_ind(x_grid_2nm, now_x)
+        y_ind = mf.get_closest_el_ind(y_grid_2nm, now_y)
+        z_ind = mf.get_closest_el_ind(z_grid_2nm, now_z)
         
         if mon_pos == 0:
             mon_type = -1
