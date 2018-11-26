@@ -40,7 +40,7 @@ d_PMMA = 122
 E0 = 20e+3
 
 D = 0
-num = 1922
+num = 2338
 
 while num < n_files:
 #while num < 1:

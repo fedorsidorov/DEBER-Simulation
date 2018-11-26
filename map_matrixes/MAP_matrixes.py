@@ -3,24 +3,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import importlib
-import my_functions as mf
-import my_variables as mv
 import copy
 from itertools import product
 
+import my_functions as mf
+import my_variables as mv
+import my_indexes as mi
+import my_constants as mc
+
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
+mi = importlib.reload(mi)
+mc = importlib.reload(mc)
+
 os.chdir(mv.sim_path_MAC + 'map_matrixes')
+
+#%% Tests
+cm = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_chain.npy')
+cim = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_chain_inv.npy')
+
+#%%
+c = cm[0, 0, 0]
+ci = cim[0, 0]
+
+#%%
+#part_matrix = chain_matrix
 
 #%% functions
 def rewrite_mon_type(n_chain, n_mon, new_type):
-    chain_inv_matrix[n_chain, n_mon, -1] = new_type
     
-    Z, XY, x, y, z = chain_inv_matrix[n_chain, n_mon, :-2].astype(int)
-    pos = chain_inv_matrix[n_chain, n_mon, -2]
+    chain_inv_matrix[n_chain, n_mon, mi.mon_type] = new_type
     
-    if not np.isnan(pos):
-        part_matrix[Z, XY, x, y, z, int(pos), -1] = new_type
+    x, y, z = chain_inv_matrix[n_chain, n_mon]
+    pos = chain_inv_matrix[n_chain, n_mon, mi.n_mon]
+    
+    if pos != mc.uint16_max:
+        part_matrix[x, y, z, pos, mi.mon_type] = new_type
 
 
 def add_ester_group(cell_coords):

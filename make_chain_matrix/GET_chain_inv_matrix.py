@@ -28,6 +28,10 @@ x_bins_2nm = np.arange(x_beg, x_end + 1, step_2nm)
 y_bins_2nm = np.arange(y_beg, y_end + 1, step_2nm)
 z_bins_2nm = np.arange(z_beg, z_end + 1, step_2nm)
 
+x_grid_2nm = (x_bins_2nm[:-1] + x_bins_2nm[1:]) / 2
+y_grid_2nm = (y_bins_2nm[:-1] + y_bins_2nm[1:]) / 2
+z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
+
 chain_inv_matrix = - np.ones((N_0, max_len, 3), dtype=np.uint16)
 
 #%%
@@ -44,23 +48,12 @@ for chain_num in range(N_0):
         
         now_x, now_y, now_z = mon_line
         
-        x_ind = mf.get_closest_el_ind(x_bins_2nm, now_x)
-        y_ind = mf.get_closest_el_ind(y_bins_2nm, now_y)
-        z_ind = mf.get_closest_el_ind(z_bins_2nm, now_z)
+        x_ind = mf.get_closest_el_ind(x_grid_2nm, now_x)
+        y_ind = mf.get_closest_el_ind(y_grid_2nm, now_y)
+        z_ind = mf.get_closest_el_ind(z_grid_2nm, now_z)
         
         chain_inv_matrix[chain_num, mon_pos, :] = x_ind, y_ind, z_ind
 
 #%%
 print('chain_inv_matrix size, Gb:', chain_inv_matrix.nbytes / 1024**3)
 np.save('MATRIX_chain_inv.npy', chain_inv_matrix)
-
-#%%
-a = np.load('MATRIX_chain_inv_int8.npy')
-
-#%%
-a = chain_inv_matrix[0]
-
-
-
-
-

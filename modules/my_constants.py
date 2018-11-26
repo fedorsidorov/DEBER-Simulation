@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 
 #%% Variables
@@ -38,31 +39,6 @@ CONC_at = {'H': n_H, 'C': n_C, 'O': n_O, 'Si': n_Si}
 CONC = [n_PMMA_at, n_PMMA_at, n_PMMA_at, n_Si]
 
 #%%
-tr_num, par_num = 0, 1
-atom_id, coll_id = 2, 3
-e_E, e_dE = 4, 8
-e_x, e_y, e_z = 5, 6, 7
-
-elastic, exc = 0, 1
-ion_K = 2
-ion_L1, ion_L2, ion_L3 = 3, 4, 5
-ion_M1, ion_M2, ion_M3 = 6, 7, 8
-
-H = 0
-C = 1
-O = 2
-Si = 3
-
-## chain matrix
-n_chain = 0
-n_mon = 1
-mon_type = 2
-
-## chain inv matrix
-inv_pos = 1
-c_Z, c_XY, c_x, c_y, c_z, n_mon, pos, mon_type = 0, 1, 2, 3, 4, 5, 6, 7
-
-#%%
 sim_path_MAC = '/Users/fedor/Documents/DEBER-Simulation/'
 #sim_path_FTIAN = '/home/fedor/Yandex.Disk/Study/Simulation/'
 
@@ -91,7 +67,5 @@ n_part_max = 600
 chain_len_max = 8294
 chain_len_max_short = 6000
 
-## process indexes
-proc_indexes = 0, 1, 2
-sci_ester, sci_direct, ester = proc_indexes
-ester_CO, ester_CO2 = 0, 1
+#%%
+uint16_max = 65535

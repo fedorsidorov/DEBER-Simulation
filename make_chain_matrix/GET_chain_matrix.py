@@ -33,7 +33,7 @@ x_grid_2nm = (x_bins_2nm[:-1] + x_bins_2nm[1:]) / 2
 y_grid_2nm = (y_bins_2nm[:-1] + y_bins_2nm[1:]) / 2
 z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
 
-n_mon_max = 400
+n_mon_max = 404
 
 shape_arr = len(x_grid_2nm), len(y_grid_2nm), len(z_grid_2nm)
 
@@ -73,14 +73,3 @@ for chain_num in range(N_0):
 #%%
 print('chain_matrix size, Gb:', chain_matrix.nbytes / 1024**3)
 np.save('MATRIX_chain.npy', chain_matrix)        
-
-#%%
-cim = np.load('MATRIX_chain_inv.npy')
-
-#%%
-pm = pos_matrix[0]
-cm = chain_matrix[0, 0, 3]
-
-
-
-
