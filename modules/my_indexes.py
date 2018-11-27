@@ -17,13 +17,13 @@ C = 1
 O = 2
 Si = 3
 
-## chain matrix
-#inv_pos = 1
+## resist matrix
+n_chain = 0
 #x, y, z, mon_pos, pos, mon_type = 0, 1, 2, 3, 4, 5
 
-## chain inv matrix
+## chain table
 x_ind, y_ind, z_ind = 0, 1, 2
-mon_pos = 3
+mon_line_pos = 3
 mon_type = -1
 
 #%%

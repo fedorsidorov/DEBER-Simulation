@@ -313,7 +313,7 @@ for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(
             print('WTF', mon_type)
 
 #%% Get radicals
-radical_matrix = np.zeros((mv.n_chains_short*3, mv.chain_len_max_short))
+radical_matrix = np.zeros((, mv.chain_len_max_short))
 
 for i in range(mv.n_chains_short*3):
     
