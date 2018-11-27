@@ -33,7 +33,8 @@ x_grid_2nm = (x_bins_2nm[:-1] + x_bins_2nm[1:]) / 2
 y_grid_2nm = (y_bins_2nm[:-1] + y_bins_2nm[1:]) / 2
 z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
 
-n_mon_max = 404
+#n_mon_max = 404
+n_mon_max = 810
 
 shape_arr = len(x_grid_2nm), len(y_grid_2nm), len(z_grid_2nm)
 

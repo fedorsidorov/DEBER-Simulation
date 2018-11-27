@@ -18,58 +18,48 @@ mc = importlib.reload(mc)
 
 os.chdir(mv.sim_path_MAC + 'map_matrixes')
 
-#%% Tests
-cm = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_chain.npy')
-cim = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_chain_inv.npy')
-
-#%%
-c = cm[0, 0, 0]
-ci = cim[0, 0]
-
-#%%
-#part_matrix = chain_matrix
-
 #%% functions
+
+## changes monomer type
 def rewrite_mon_type(n_chain, n_mon, new_type):
-    
-    chain_inv_matrix[n_chain, n_mon, mi.mon_type] = new_type
-    
-    x, y, z = chain_inv_matrix[n_chain, n_mon]
-    pos = chain_inv_matrix[n_chain, n_mon, mi.n_mon]
-    
-    if pos != mc.uint16_max:
-        part_matrix[x, y, z, pos, mi.mon_type] = new_type
+    ## change mon_type in chain_inv_matrix
+    chain_table[n_chain, n_mon, mi.mon_type] = new_type
+    ## define x, y, z of monomer
+    x_ind, y_ind, z_ind, mon_line_pos = chain_table[n_chain, n_mon, :mi.mon_type]
+    ## if we aren't outside the resist area of interest
+    if not x_ind == y_ind == z_ind == mon_line_pos == mc.uint16_max:
+        resist_matrix[x_ind, y_ind, z_ind, mon_line_pos, mi.mon_type] = new_type
 
 
-def add_ester_group(cell_coords):
-    Z, XY, x, y, z = cell_coords
-    ester_ind = np.where(np.isnan(part_matrix[Z, XY, x, y, z, :, 0]))[0][0]
-    part_matrix[Z, XY, x, y, z, ester_ind, :] = -100
+## add ester group to resist array
+def add_ester_group(x_ind, y_ind, z_ind):
+    ## looking for a free space
+    ester_ind = np.where(resist_matrix[x_ind, y_ind, z_ind, :, mi.n_chain] ==\
+                         mc.uint16_max)[0][0]
+    ## and write to it ester group line
+    resist_matrix[x_ind, y_ind, z_ind, ester_ind, :] = 100
     return 1
 
 
-def delete_ester_group(cell_coords, ind):
-    Z, XY, x, y, z = cell_coords
-    part_matrix[Z, XY, x, y, z, ind, :] = np.nan
-    
-    ester_add = -1
-    CO_add = 0
-    CO2_add = 0
-    CH4_add = 1
-    
+## remove ester group from resist_matrix
+def remove_ester_group(x_ind, y_ind, z_ind, ester_line_pos):
+    ## make free corresponding line of resist_matrix
+    resist_matrix[x_ind, y_ind, z_ind, ester_line_pos, :] = mc.uint16_max
+    ## make a desicion on ester group decay
+    ester_add, CO_add, CO2_add, CH4_add = -1, 0, 0, 1
     easter_decay = mf.choice((mv.ester_CO, mv.ester_CO2), p=(d_CO, d_CO2))
-    
     if easter_decay == mv.ester_CO:
         CO_add = 1
     else:
         CO2_add = 1
-    
     return ester_add, CO_add, CO2_add, CH4_add
 
 
-def get_part_ind(cell_coords):    
-    Z, XY, x, y, z = cell_coords
-    part_inds = np.where(np.logical_not(np.isnan(part_matrix[Z, XY, x, y, z, :, 0])))[0]
+#%% choose one of existing particles to interact electron with
+def get_part_ind(x_ind, y_ind, z_ind):
+    ## indexes of existing particle lines
+    part_inds = np.where(resist_matrix[x_ind, y_ind, z_ind, :, mi.n_chain] !=\
+                         mc.uint16_max)[0]
     
     if len(part_inds) == 0:
             return -1
@@ -94,38 +84,40 @@ def get_inv_line(n_chain, n_mon):
     return chain_inv_matrix[n_chain, n_mon]
 
 
-def get_n_events(cell_coords):
-    Z, XY, x, y, z = cell_coords
-    return e_matrix[Z, XY, x, y, z].astype(int)
+def get_n_events(x, y, z):
+    return e_matrix[x, y, z]
 
 
-def get_part_line(cell_coords, part_ind):
-    Z, XY, x, y, z = cell_coords
-    return part_matrix[Z, XY, x, y, z, part_ind, :]
+def get_part_line(x, y, z, part_ind):
+    return part_matrix[x, y, z, part_ind, :]
 
 
 def mon_type_to_kind(mon_type):
+    
     if mon_type in [-1, 0, 1]:
         return mon_type
     else:
         return mon_type - 10
 
 
-#%%
-part_matrix = np.load('../chain_DATA/chain_matrix_short.npy')
-chain_inv_matrix = np.load('../chain_DATA/chain_matrix_inv_short.npy')
+def correct_mon_type(mon_type):
+    if mon_type == mc.uint16_max:
+        return -1
+    return mon_type
 
+#%%
 n_scission = 0
 n_CO = 0
 n_CO2 = 0
 n_CH4 = 0
 n_ester = 0
 
-#%%
-e_matrix = np.load('../e_DATA/matrixes/Sharma/e_matrix_C_exc.npy')
+e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_e_500_pC_cm.npy')
 
-#%
-s0, s1, s2, s3, s4 = np.shape(e_matrix)
+resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_chain.npy')
+chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_chain_inv.npy')
+
+s0, s1, s2 = np.shape(e_matrix)
 
 ## probabilities
 #p1 = 0.3 ## ester group detachment with scissions
@@ -144,15 +136,13 @@ k_CO2 = 13
 
 d_CO, d_CO2 = (k_CO, k_CO2) / np.sum((k_CO, k_CO2))
 
-#%
-for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(s4)):
+#%%
+for x, y, z in product(range(s0), range(s1), range(s2)):
     
-    if XY == z == y == x == 0:
-        print('Z =', Z)
+    if x == y == 0:
+        print('z =', z)
     
-    cell_coords = Z, XY, x, y, z
-    
-    n_events = get_n_events(cell_coords)
+    n_events = get_n_events(x, y, z)
     
     for i in range(n_events):
         
@@ -160,19 +150,26 @@ for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(
         if mf.random() >= p3:
             continue
         
-        part_ind = get_part_ind(cell_coords)
+        part_ind = get_part_ind(x, y, z)
         
         if part_ind == -1:
             continue
         
-        part_line = get_part_line(cell_coords, part_ind)
+        part_line = get_part_line(x, y, z, part_ind)
         n_chain, n_mon, mon_type = list(map(int, part_line))
+        
+        ## convert 65535 to -1
+        mon_type = correct_mon_type(mon_type)
+        
+        if mon_type == mc.uint16_max:
+            print('MON_TYPE ERROR!')
         
 ###############################################################################
         if mon_type == -100: # ester group ####################################
 ###############################################################################
             
-            ester_add, CO_add, CO2_add, CH4_add = delete_ester_group(cell_coords, part_ind)
+            ester_add, CO_add, CO2_add, CH4_add =\
+                remove_ester_group(x, y, z, part_ind)
             
             n_ester += ester_add
             n_CO += CO_add
@@ -180,7 +177,7 @@ for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(
             n_CH4 += CH4_add
             
             continue
-        
+
 ############################################################################### 
         elif mon_type in [0, 10]: # bonded monomer with ester group ###########
 ###############################################################################
@@ -195,20 +192,26 @@ for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(
             if process == mv.ester:
                 
                 rewrite_mon_type(n_chain, n_mon, 10)
-                n_ester += add_ester_group(cell_coords)
+                n_ester += add_ester_group(x, y, z)
             
             ## deal with monomer types
             elif process in [mv.sci_ester, mv.sci_direct]:
                 
                 new_mon_kind = get_mon_kind()
                 new_mon_type = mon_type + new_mon_kind
+                
+                if new_mon_type not in [-1, 1, 9, 11]:
+                    print('new_mon_type error!', new_mon_type)
+                
                 rewrite_mon_type(n_chain, n_mon, new_mon_type)
                 
                 n_next_mon = n_mon + new_mon_kind
                 next_mon_inv_line = get_inv_line(n_chain, n_next_mon)
                 
-                new_cell_coords = next_mon_inv_line[:5].astype(int)
-                next_mon_pos, next_mon_type = next_mon_inv_line[5:]
+#                new_cell_coords = next_mon_inv_line
+                next_x, next_y, next_z, next_mon_type = next_mon_inv_line
+                
+                next_mon_type = correct_mon_type(next_mon_type)
                 
                 ## if next monomer was at the end
                 if next_mon_type in [-1, 1]:
@@ -222,9 +225,10 @@ for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(
                     
                     next_mon_new_type = next_mon_type - new_mon_kind
                     rewrite_mon_type(n_chain, n_next_mon, next_mon_new_type)
-                        
+                
                 else:
-                    print('error 1', next_mon_type)
+                    print('error 1, next_mon_type =', next_mon_type)
+                    print(x, y, z)
                 
                 n_scission += 1
             
@@ -232,8 +236,9 @@ for Z, XY, x, y, z in product(range(s0), range(s1), range(s2), range(s3), range(
             if process == mv.sci_ester:
                 
                 rewrite_mon_type(n_chain, n_mon, new_mon_type + 10)
-                n_ester += add_ester_group(cell_coords)
-                
+                n_ester += add_ester_group(x, y, z)
+
+#%%   
 ###############################################################################
         elif mon_type in [-1, 1, 9, 11]: # half-bonded monomer with or w/o ester group
 ###############################################################################

@@ -18,13 +18,13 @@ O = 2
 Si = 3
 
 ## chain matrix
-inv_pos = 1
-x, y, z, n_mon, pos, mon_type = 0, 1, 2, 3, 4, 5
+#inv_pos = 1
+#x, y, z, mon_pos, pos, mon_type = 0, 1, 2, 3, 4, 5
 
 ## chain inv matrix
-n_chain = 0
-n_mon = 1
-mon_type = 2
+x_ind, y_ind, z_ind = 0, 1, 2
+mon_pos = 3
+mon_type = -1
 
 #%%
 sim_path_MAC = '/Users/fedor/Documents/DEBER-Simulation/'
