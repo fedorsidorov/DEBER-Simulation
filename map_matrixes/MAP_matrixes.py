@@ -114,6 +114,53 @@ def correct_mon_type(mon_type):
     return mon_type
 
 
+## calculate local chain lengths distribution
+#def get_local_chain_len():
+#    
+#    chain_sum_len_matrix = np.zeros(np.shape(e_matrix))
+#    n_chains_matrix = np.zeros(np.shape(e_matrix))
+#    
+#    for chain in chain_table:
+#        
+#        beg_ind = 0
+#        
+#        while True:
+#            
+#            if chain[beg_ind, mi.mon_type] not in [mc.uint16_max, 9]:
+#                print('chain indexing error!')
+#            
+#            st_1 = chain[beg_ind:, mi.mon_type] == 1
+#            st_2 = chain[beg_ind:, mi.mon_type] == 11
+#            
+#            where_result = np.where(np.logical_or(st_1, st_2))[0]
+#            
+#            if len(where_result) == 0:
+#                break
+#            
+#            end_ind = where_result[0]
+#            
+#            now_chain_len = end_ind - beg_ind
+#            print(now_chain_len)
+#            
+#            inds_list = []
+#            
+#            for mon_line in chain[beg_ind:end_ind+1]:
+#                
+#                x_ind, y_ind, z_ind = mon_line[:3]
+#                now_inds = [x_ind, y_ind, z_ind]
+#                
+#                if now_inds in inds_list:
+#                    continue
+#                
+#                chain_sum_len_matrix[x_ind, y_ind, z_ind] += now_chain_len
+#                n_chains_matrix[x_ind, y_ind, z_ind] += 1
+#                
+#                inds_list.append(now_inds)
+#            
+#            beg_ind = end_ind + 1
+#    
+#    return chain_sum_len_matrix, n_chains_matrix
+
 #%%
 l_xyz = np.array((600, 100, 122))
 
@@ -168,6 +215,71 @@ k_CO2 = 13
 d_CO, d_CO2 = (k_CO, k_CO2) / np.sum((k_CO, k_CO2))
 
 N_chains_total = 63306
+
+#%%
+chain_sum_len_matrix = np.zeros(np.shape(e_matrix))
+n_chains_matrix = np.zeros(np.shape(e_matrix))
+
+for idx, chain in enumerate(chain_table):
+    
+    mf.upd_progress_bar(idx, N_chains_total)
+    
+    beg_ind = 0
+    
+#    while True:
+    for ii in range(3):
+        
+        if beg_ind >= 9780:
+            break
+        
+#        print('beg_ind', beg_ind)
+        
+        if chain[beg_ind, mi.mon_type] in [2, 12]:
+            beg_ind += 1
+            continue
+        
+        if chain[beg_ind, mi.mon_type] not in [mc.uint16_max, 9]:
+            print('mon_type', chain[beg_ind, mi.mon_type])
+            print('chain indexing error!')
+        
+        st_1 = chain[beg_ind:, mi.mon_type] == 1
+        st_2 = chain[beg_ind:, mi.mon_type] == 11
+        
+        where_result = np.where(np.logical_or(st_1, st_2))[0]
+        
+        if len(where_result) == 0:
+            break
+        
+#        end_ind = where_result[0]
+        end_ind = beg_ind + where_result[0]
+#        print('end_ind', end_ind)
+        
+        now_chain_len = end_ind - beg_ind
+#        print('len', now_chain_len)
+        
+        inds_list = []
+        
+        for mon_line in chain[beg_ind:end_ind+1]:
+            
+            x_ind, y_ind, z_ind = mon_line[:3]
+            
+            if x_ind == y_ind == z_ind == mc.uint16_max:
+                continue
+            
+            now_inds = [x_ind, y_ind, z_ind]
+            
+            if now_inds in inds_list:
+                continue
+            
+            chain_sum_len_matrix[x_ind, y_ind, z_ind] += now_chain_len
+            n_chains_matrix[x_ind, y_ind, z_ind] += 1
+            
+            inds_list.append(now_inds)
+        
+        beg_ind = end_ind + 1
+
+#%%
+ans = chain_sum_len_matrix / n_chains_matrix
 
 #%%
 for x_ind, y_ind, z_ind in product(range(s_0), range(s_1), range(s_2)):
@@ -349,15 +461,16 @@ chain_test_inds = np.random.choice(N_chains_total, 100, replace=False)
 chain_test_table = chain_table[chain_test_inds]
 
 #%%
-L_final = []
-radical_matrix = np.zeros((N_chains_total, len(chain_table[0])))
-
-n = 0
-
-for now_chain in chain_table:
+for chain in chain_table:
     
-    mf.upd_progress_bar(n, N_chains_total)
-    n += 1
+
+#%%
+L_final = []
+radical_matrix = np.zeros((len(chain_table), len(chain_table[0])))
+
+for i, now_chain in enumerate(chain_table):
+    
+    mf.upd_progress_bar(i, N_chains_total)
     cnt = 0
     
     radical_matrix[i] = now_chain[:, mi.mon_type]
@@ -412,11 +525,12 @@ for x_ind, y_ind, z_ind in product(range(s_0), range(s_1), range(s_2)):
 plt.figure()
 plt.semilogy(x_grid_2nm, np.sum(monomer_matrix[:, 25, :], axis = 1), label='500 pC/cm')
 plt.xlabel('x, nm')
-plt.ylabel('n_monomers')
+plt.ylabel('N monomers')
 plt.title('Monomer coordinate distribution, 2 nm')
 plt.legend()
 plt.grid()
 plt.show()
+plt.savefig('LOG monomers 2nm.png', dpi=300)
 
 #%%
 monomer_matrix_xz = np.sum(monomer_matrix, axis=1)
@@ -424,12 +538,12 @@ monomer_matrix_xz = np.sum(monomer_matrix, axis=1)
 plt.figure()
 plt.semilogy(x_grid_2nm, np.sum(monomer_matrix_xz, axis = 1), label='500 pC/cm')
 plt.xlabel('x, nm')
-plt.ylabel('n_monomers')
+plt.ylabel('N monomers')
 plt.title('Monomer coordinate distribution, 100 nm')
 plt.legend()
 plt.grid()
 plt.show()
-
+plt.savefig('LOG monomers 100nm.png', dpi=300)
 
 #%% Sharma G-value
 #N_el_dep = 6e-5 / 1.6e-19 * 1e-10
