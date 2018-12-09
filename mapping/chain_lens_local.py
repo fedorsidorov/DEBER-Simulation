@@ -8,7 +8,7 @@ import my_variables as mv
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
-os.chdir(mv.sim_path_MAC + 'map_matrixes')
+os.chdir(mv.sim_path_MAC + 'mapping')
 
 #%%
 l_xyz = np.array((600, 100, 122))
@@ -53,7 +53,7 @@ plt.grid()
 plt.show()
 plt.savefig('AVG chains local 2nm before.png', dpi=300)
 
-#%% before 2 nm
+#%% before 100 nm
 c_x_100_b = np.sum(np.sum(c_before, axis=1), axis=1)
 n_x_100_b = np.sum(np.sum(n_before, axis=1), axis=1)
 
@@ -66,7 +66,7 @@ plt.grid()
 plt.show()
 plt.savefig('AVG chains local 100nm before.png', dpi=300)
 
-#%% after 100 nm
+#%% after 2 nm
 c_x_2_a = np.sum(c_after[:, 25, :], axis=1)
 n_x_2_a = np.sum(n_after[:, 25, :], axis=1)
 
@@ -86,7 +86,7 @@ n_x_100_a = np.sum(np.sum(n_after, axis=1), axis=1)
 plt.plot(x_grid_2nm, c_x_100_a / n_x_100_a)
 plt.xlabel('x, nm')
 plt.ylabel('AVG local chain length')
-plt.title('Chain local length distribution BEFORE EXPOSURE, 100 nm')
+plt.title('Chain local length distribution AFTER EXPOSURE, 100 nm')
 plt.legend()
 plt.grid()
 plt.show()

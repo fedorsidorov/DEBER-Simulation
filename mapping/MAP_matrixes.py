@@ -18,15 +18,22 @@ mi = importlib.reload(mi)
 mc = importlib.reload(mc)
 mm = importlib.reload(mm)
 
-os.chdir(mv.sim_path_MAC + 'maping')
+os.chdir(mv.sim_path_MAC + 'mapping')
 
 #%%
 e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_e_500_pC_cm_C.npy')
 resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_resist.npy')
 chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/TABLE_chains.npy')
 
-p_scission = 0.5
+#%%
+chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(chain_table)
 
+#%%
+np.save('chain_sum_len_after.npy', chain_sum_len_matrix)
+np.save('n_chains_after.npy', n_chains_matrix)
+
+#%%
+p_scission = 0.5
 n_scissions = 0
 
 #%%
@@ -34,7 +41,7 @@ for x_ind, y_ind, z_ind in product(range(mm.resist_shape[0]),\
         range(mm.resist_shape[1]), range(mm.resist_shape[2])):
     
     if y_ind == z_ind == 0:
-        mf.upd_progress_bar(x_ind, s_0)
+        mf.upd_progress_bar(x_ind, mm.resist_shape[0])
     
     n_events = mm.get_n_events(e_matrix, x_ind, y_ind, z_ind)
     
@@ -138,7 +145,7 @@ radical_matrix = np.zeros((len(chain_table), len(chain_table[0])))
 
 for i, now_chain in enumerate(chain_table):
     
-    mf.upd_progress_bar(i, N_chains_total)
+    mf.upd_progress_bar(i, mm.N_chains_total)
     cnt = 0
     
     radical_matrix[i] = now_chain[:, mi.mon_type]
@@ -160,6 +167,9 @@ for i, now_chain in enumerate(chain_table):
             cnt += 1
             L_final.append(cnt)            
             cnt = 0
+
+#%%
+chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(chain_table)
 
 #%%
 np.save('MATRIX_radicals.npy', radical_matrix)

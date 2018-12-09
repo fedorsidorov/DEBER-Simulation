@@ -42,14 +42,16 @@ def get_n_electrons(dose_C_cm2, lx_nm, ly_nm):
     Q_C = dose_C_cm2 * A_cm2
     return int(np.round(Q_C / q_el_C))
 
-def get_n_files_with_50nm_borders(l_dose_C_cm, ly_nm):
+def get_n_files_with_50nm_borders_L(L_dose_C_cm, ly_nm):
     space = 50
     tracks_in_file = 100
-    n_el = l_dose_C_cm / 1e+7 * (ly_nm + space*2) / 1.6e-19
+    n_el = L_dose_C_cm / 1e+7 * (ly_nm + space*2) / 1.6e-19
     n_files_total = n_el // tracks_in_file
     return int(n_files_total)
 
-
-
-
-
+def get_n_files_with_50nm_borders_S(S_dose_C_cm2, lx_nm, ly_nm):
+    space = 50
+    tracks_in_file = 100
+    n_el = S_dose_C_cm2 / (1e+7)**2 * (lx_nm + space*2) * (ly_nm + space*2) / 1.6e-19
+    n_files_total = n_el // tracks_in_file
+    return int(n_files_total)
