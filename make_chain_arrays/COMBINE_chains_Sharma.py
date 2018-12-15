@@ -49,7 +49,6 @@ data_Sharma = np.loadtxt(mv.sim_path_MAC +\
 x_Sharma = data_Sharma[:, 0]
 y_Sharma = data_Sharma[:, 1]
 
-
 plt.plot(np.log10(x_Sharma), y_Sharma/y_Sharma.max()*1.1, label='model')
 
 plt.title('Chain mass distribution')

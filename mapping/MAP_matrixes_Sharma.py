@@ -21,14 +21,24 @@ mm = importlib.reload(mm)
 os.chdir(mv.sim_path_MAC + 'mapping')
 
 #%%
-e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_500pC_cm_C_exc.npy')
-resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_resist.npy')
-chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/TABLE_chains.npy')
+e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_6e-5C_cm2_C_exc.npy')
+resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_resist_Sharma.npy')
+chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/TABLE_chains_Sharma.npy')
+
+N_chains_total = 12703
+N_mon_chain_max = 8294
+
+resist_shape = np.shape(resist_matrix)
 
 #%%
-#chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(chain_table)
+e_test = e_matrix[20]
+resist_test = resist_matrix[20, 20, 0]
 
 #%%
+#chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(np.shape(resist_matrix),
+#                                        N_mon_chain_max, chain_table)
+#
+##%%
 #np.save('chain_sum_len_after.npy', chain_sum_len_matrix)
 #np.save('n_chains_after.npy', n_chains_matrix)
 
@@ -36,16 +46,18 @@ chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/TABLE_chains.npy')
 p_scission = 0.5
 n_scissions = 0
 
-rad_mon_matrix = np.zeros(np.shape(e_matrix))
+n_events_total = 0
 
 #%%
-for x_ind, y_ind, z_ind in product(range(mm.resist_shape[0]),\
-        range(mm.resist_shape[1]), range(mm.resist_shape[2])):
+for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
+           range(resist_shape[1]), range(resist_shape[2])):
     
     if y_ind == z_ind == 0:
-        mf.upd_progress_bar(x_ind, mm.resist_shape[0])
+        mf.upd_progress_bar(x_ind, resist_shape[0])
     
     n_events = mm.get_n_events(e_matrix, x_ind, y_ind, z_ind)
+    
+    n_events_total += n_events
     
     for i in range(n_events):
         
@@ -122,64 +134,45 @@ for x_ind, y_ind, z_ind in product(range(mm.resist_shape[0]),\
             n_scissions += 1
             
 ###############################################################################
-        elif mon_type == mm.free_mon: ## free monomer #########################
+        elif mon_type == mm.free_mon: ## free monomer with ester group ########
 ###############################################################################
             
+            ## only ester group deatachment is possible
             mm.rewrite_mon_type(resist_matrix, chain_table,\
                              n_chain, n_mon, mm.free_rad_mon)
             
-            ## wow, we have radicalized monomer
-            rad_mon_matrix[x_ind, y_ind, z_ind] += 1
+            n_scissions += 1
         
-###############################################################################
-        elif mon_type == mm.free_rad_mon: ## free radicalized monomer #########
-###############################################################################
-            
+        elif mon_type == mm.free_rad_mon:
             continue
         
-############################################################################### 
-        else: #################################################################
-###############################################################################
-            
+        else:
             print('WTF', mon_type)
 
-#%%
-ans = e_matrix[150]
-bns = rad_mon_matrix[150]
 
 #%%
-plt.imshow(np.sum(e_matrix[125:175:, :, :], axis=1))
-plt.colorbar()
-plt.show()
-
-#%%
-plt.imshow(np.sum(rad_mon_matrix[125:175:, :, :], axis=1))
-plt.colorbar()
-plt.show()
-
-#%%
-chain_test_inds = np.random.choice(mm.N_chains_total, 100, replace=False)
-chain_test_table = chain_table[chain_test_inds]
-
-resist_matrix_test = resist_matrix[:, 25, 30]
+#chain_test_inds = np.random.choice(N_chains_total, 100, replace=False)
+#chain_test_table = chain_table[chain_test_inds]
+#
+#resist_matrix_test = resist_matrix[:, 25, 30]
 
 #%%
 L_final = []
-radical_matrix = np.zeros((len(chain_table), len(chain_table[0])))
+#radical_matrix = np.zeros((len(chain_table), len(chain_table[0])))
 
 for i, now_chain in enumerate(chain_table):
     
-    mf.upd_progress_bar(i, mm.N_chains_total)
+    mf.upd_progress_bar(i, N_chains_total)
     cnt = 0
     
-    radical_matrix[i] = now_chain[:, mm.mon_type_ind]
+#    radical_matrix[i] = now_chain[:, mm.mon_type_ind]
     
     for line in now_chain:
         
         if np.all(line == mc.uint16_max):
             break
         
-        mon_type = line[-1]
+        mon_type = line[mm.mon_type_ind]
                 
         if mon_type == 0:
             cnt == 1
@@ -193,20 +186,50 @@ for i, now_chain in enumerate(chain_table):
             cnt = 0
 
 #%%
-#chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(chain_table)
+L_final_arr = np.array(L_final)
+
+log_mw = np.log10(L_final_arr * 100)
+plt.hist(log_mw, bins=20, label='sample', normed=True)
+
+data_Sharma = np.loadtxt(mv.sim_path_MAC +\
+                         'L_distribution_simulation/curves/Sharma_peak_A.dat')
+
+x_Sharma = data_Sharma[:, 0]
+y_Sharma = data_Sharma[:, 1]
+
+plt.plot(np.log10(x_Sharma), y_Sharma/y_Sharma.max()*1.1, label='model')
+
+plt.title('Chain mass distribution')
+plt.xlabel('log(m$_w$)')
+plt.ylabel('probability')
+plt.ylim((0, 1.2))
+plt.legend()
+plt.grid()
+plt.show()
+
+#%% Sharma G-value
+N_el_dep = 6e-5 / 1.6e-19 * (100e-7)**2
+E_dep =  N_el_dep * 25e+3
+#G_value = n_scissions / (E_dep / 100)
+G_value = n_events_total / (E_dep / 100)
+print(G_value * 100)
 
 #%%
-np.save('MATRIX_radicals.npy', radical_matrix)
+chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(chain_table)
+
+#%%
+#np.save('MATRIX_radicals.npy', radical_matrix)
 np.save('final_L_2.5C_exc.npy', np.array(L_final))
 
 #%%
-radical_matrix_uint16 = np.array(radical_matrix, dtype=np.uint16)
+#radical_matrix_uint16 = np.array(radical_matrix, dtype=np.uint16)
 
 #%%
 L_final_arr = np.array(L_final)
+L_test = L_final_arr[:1000]
 
 #%%
-plt.hist(np.log(L_final_arr * 100))
+plt.hist(np.log10(L_final_arr * 100))
 
 #%% get monomers
 monomer_matrix = np.zeros((s_0, s_1, s_2))
@@ -246,15 +269,6 @@ plt.legend()
 plt.grid()
 plt.show()
 plt.savefig('LOG monomers 100nm.png', dpi=300)
-
-#%% Sharma G-value
-#N_el_dep = 6e-5 / 1.6e-19 * 1e-10
-#E_dep =  N_el_dep * 25e+3
-#G_value = n_scission / (E_dep / 100)
-#print(G_value * 100)
-
-#%%
-
 
 #%% destroy some ester groups
 #ester_part = 0.5

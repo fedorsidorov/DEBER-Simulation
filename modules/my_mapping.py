@@ -108,10 +108,10 @@ def get_resist_part_line(resist_matrix, x_ind, y_ind, z_ind, resist_part_ind):
 
 
 ## calculate local AVG chain length distribution
-def get_local_chain_len(chain_table):
+def get_local_chain_len(res_shape, N_mon_max, chain_table):
     
-    chain_sum_len_matrix = np.zeros(resist_shape)
-    n_chains_matrix = np.zeros(resist_shape)
+    chain_sum_len_matrix = np.zeros(res_shape)
+    n_chains_matrix = np.zeros(res_shape)
     
     for idx, chain in enumerate(chain_table):
         
@@ -121,7 +121,7 @@ def get_local_chain_len(chain_table):
         
         while True:
             
-            if beg_ind >= N_mon_chain_max or chain[beg_ind, mon_type_ind] == uint16_max:
+            if beg_ind >= N_mon_max or chain[beg_ind, mon_type_ind] == uint16_max:
                 break
                         
             if chain[beg_ind, mon_type_ind] in [free_mon, free_rad_mon]:

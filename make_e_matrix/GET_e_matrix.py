@@ -19,7 +19,7 @@ import e_matrix_functions as emf
 emf = importlib.reload(emf)
 
 #%% calculate required files amount
-n_files = emf.get_n_files_with_50nm_borders(500e-12, 100)
+n_files = emf.get_n_files_with_50nm_borders_L(500e-12, 100)
 
 l_xyz = np.array((600, 100, 122))
 
@@ -45,7 +45,8 @@ z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
 
 #%%
 #n_mon_max = 400
-e_matrix = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)-1))
+e_matrix = np.zeros((len(x_grid_2nm), len(y_grid_2nm), len(z_grid_2nm)))
+z_matrix = np.zeros(len(z_grid_2nm))
 
 source_dir = mv.sim_path_MAC + 'e_DATA/DATA_Pn_20keV_122nm/'
 
@@ -54,6 +55,7 @@ n_files_used = 625
 n_events = 0
 
 for i in range(n_files_used):
+#for i in range(1):
     
     mf.upd_progress_bar(i, n_files_used)
     
@@ -70,17 +72,38 @@ for i in range(n_files_used):
         
         emf.shift_DATA(now_DATA_Pn, (-beam_d/2, beam_d/2), (-space+y_beg, y_end+space))
         
-        now_DATA_Pn_C = now_DATA_Pn[np.where(now_DATA_Pn[:, mi.atom_id] == mi.C)]
+#        now_DATA_Pn_C = now_DATA_Pn[np.where(now_DATA_Pn[:, mi.atom_id] == mi.C)]
         
-        e_matrix += np.histogramdd(now_DATA_Pn_C[:, 5:8], bins=bins_2nm)[0]
+        now_DATA_Pn_C_exc = now_DATA_Pn[
+                np.where(np.logical_and(
+                        np.logical_and(
+                                now_DATA_Pn[:, mi.atom_id] == mi.C,
+                                now_DATA_Pn[:, mi.coll_id] == mi.exc
+                                ),
+                        now_DATA_Pn[:, mi.e_dE] != 0)
+                        )
+                ]
         
+        e_matrix += np.histogramdd(now_DATA_Pn_C_exc[:, 5:8], bins=bins_2nm)[0]
+        z_matrix += np.histogramdd(now_DATA_Pn_C_exc[:, 7:8], bins=bins_2nm[2:])[0]
+        
+#%%
+#plt.plot(z_grid_2nm, z_matrix, label='1st event z coord')
+#plt.xlabel('z, nm')
+#plt.ylabel('N events')
+#plt.title('Event coordinate distribution, 2 nm')
+#plt.legend()
+#plt.grid()
+#plt.show()
+#plt.savefig('LOG events 2nm.png', dpi=300)
+
 #%%
 e_matrix_uint16 = np.array(e_matrix, dtype=np.uint16)
 print('e_matrix size, Mb:', e_matrix_uint16.nbytes / 1024**2)
-np.save(mv.sim_path_MAC + 'MATRIXES/MATRIX_e_500_pC_cm_C.npy', e_matrix_uint16)
+np.save(mv.sim_path_MAC + 'MATRIXES/MATRIX_500pC_cm_C_exc.npy', e_matrix_uint16)
 
 #%%
-e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_e_500_pC_cm_C.npy')
+e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_500pC_cm_C_exc.npy')
 
 #%% drawing
 plt.figure()
@@ -91,7 +114,7 @@ plt.title('Event coordinate distribution, 2 nm')
 plt.legend()
 plt.grid()
 plt.show()
-plt.savefig('LOG events 2nm.png', dpi=300)
+#plt.savefig('LOG events 2nm.png', dpi=300)
 
 #%%
 plt.figure()
@@ -103,4 +126,4 @@ plt.title('Event coordinate distribution, 100 nm')
 plt.legend()
 plt.grid()
 plt.show()
-plt.savefig('events 100nm.png', dpi=300)
+#plt.savefig('events 100nm.png', dpi=300)
