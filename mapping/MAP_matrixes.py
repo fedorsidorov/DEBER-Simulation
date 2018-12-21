@@ -26,7 +26,12 @@ resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_resist.npy')
 chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/TABLE_chains.npy')
 
 #%%
-#chain_sum_len_matrix, n_chains_matrix = mm.get_local_chain_len(chain_table)
+mon_sum_matrix = np.zeros(np.shape(e_matrix))
+
+for i, j, k in product(range(len(e_matrix)), range(len(e_matrix[0])),
+                       range(len(e_matrix[0][0]))):
+    
+    mon_sum_matrix[i, j, k] = len(np.where(resist_matrix[i, j, k] != mm.uint16_max)[0])
 
 #%%
 #np.save('chain_sum_len_after.npy', chain_sum_len_matrix)
@@ -36,6 +41,7 @@ chain_table = np.load(mv.sim_path_MAC + 'MATRIXES/TABLE_chains.npy')
 p_scission = 0.5
 n_scissions = 0
 
+mon_matrix = np.zeros(np.shape(e_matrix))
 rad_mon_matrix = np.zeros(np.shape(e_matrix))
 
 #%%
@@ -121,12 +127,16 @@ for x_ind, y_ind, z_ind in product(range(mm.resist_shape[0]),\
             
             n_scissions += 1
             
+            mon_matrix[x_ind, y_ind, z_ind] += 1
+            
 ###############################################################################
         elif mon_type == mm.free_mon: ## free monomer #########################
 ###############################################################################
             
             mm.rewrite_mon_type(resist_matrix, chain_table,\
                              n_chain, n_mon, mm.free_rad_mon)
+            
+            mon_matrix[x_ind, y_ind, z_ind] -= 1
             
             ## wow, we have radicalized monomer
             rad_mon_matrix[x_ind, y_ind, z_ind] += 1
