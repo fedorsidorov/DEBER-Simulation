@@ -33,7 +33,7 @@ plt.plot(hw, eps_real, 'r', hw, eps_imag, 'b--')
 #%% Get ELF
 Im_raw = np.loadtxt('curves/Im.txt')
 plt.plot(Im_raw[:, 0], Im_raw[:, 1], 'b')
-#
+
 #def Im_tail_func(x, a, b, c, d):
 #        return  a + b / x + c * np.exp(-d*x)
 #

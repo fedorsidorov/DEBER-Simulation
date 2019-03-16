@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
-#os.chdir(mv.sim_path_MAC + 'make_chains')
+os.chdir(mv.sim_path_MAC + 'make_chains')
 
 #%%
 def get_L_array(n_chains):
@@ -58,28 +58,33 @@ def check_chain(chain_coords, now_mon_coords, d_2):
     return True
 
 #%%
-L_arr = np.load('L_arr_10k_experiment.npy')
-plt.hist(np.log10(L_arr*mv.u_PMMA), bins=20, normed=True, label='sample')
-plt.title('Chain mass distribution')
-plt.xlabel('log(m$_w$)')
-plt.ylabel('probability')
-plt.legend()
-plt.grid()
-plt.show()
+#L_arr = np.load('L_arr_10k_experiment.npy')
+#plt.hist(np.log10(L_arr*mv.u_PMMA), bins=20, normed=True, label='sample')
+#plt.title('Chain mass distribution')
+#plt.xlabel('log(m$_w$)')
+#plt.ylabel('probability')
+#plt.legend()
+#plt.grid()
+#plt.show()
 
 #%%
 d_mon = 0.28
 d_mon_2 = d_mon**2
 
 ## Experiment
-lz = 122
+#lz = 122
 
-theta = np.deg2rad(180 - 109)
+## Aktary
+lz = 100
+
+#theta = np.deg2rad(180 - 109)
+theta = np.deg2rad(109)
 
 #n_chains = len(L_arr)
 n_chains = 10000
 
-chain_num = 7961
+#chain_num = 7961
+chain_num = 217
 
 chains_list = []
 
@@ -142,7 +147,7 @@ while chain_num < n_chains:
         
         i += 1
     
-    dirname = '../CHAINS/CHAINS_950K_122nm_10k/'
+    dirname = '../CHAINS/950K_100nm/'
     filename = 'chain_' + str(chain_num) + '.npy'
     np.save(dirname + filename, chain_coords)
     print(filename + ' is saved')

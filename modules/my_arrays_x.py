@@ -15,7 +15,7 @@ ATOMS_CS = [np.load(path + 'CS/' + atom + '_CS.npy') for atom in atoms]
 #%% PMMA atoms cross sections, normed to 1
 PMMA_ATOM_CS_SUM_NORM = np.zeros((len(E_arr), 4)) # H*8 + C*5 + O*2
 
-atom_cs_sum = [np.sum(CS[]) for i in range(len(E_arr))]
+atom_cs_sum = [np.sum(CS) for i in range(len(E_arr))]
 
 #atom_cs_sum = np.sum(H_cs_total*8, axis=1) + np.sum(C_cs_total*5, axis=1) + np.sum(O_cs_total*2, axis=1)
 #PMMA_ATOM_CS_SUM_NORM[:, 1] = np.sum(H_cs_total*8, axis=1)/atom_cs_sum

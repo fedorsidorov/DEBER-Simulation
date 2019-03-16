@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import os
-sys.path.append('../MODULES')
-import my_arrays_x as ma
+#sys.path.append('../MODULES')
+import my_arrays_25keV as ma
 import my_variables as mv
 
 #%% Second approach
@@ -12,13 +12,13 @@ SP_arr = np.zeros((len(ma.E_arr), 2))
 SP_no_el_arr = np.zeros((len(ma.E_arr), 2))
 IMFP_arr = np.zeros((len(ma.E_arr), 2))
 
-filenames = os.listdir('DATA')
+filenames = os.listdir('DATA_test')
 
 for fn in range(43):
     
     print(fn)
     
-    DATA = np.load('DATA/DATA_PMMA_' + str(fn) + '.npy')
+    DATA = np.load('DATA_test/DATA_PMMA_' + str(fn) + '.npy')
     
     for i in range(len(DATA) - 1):
         

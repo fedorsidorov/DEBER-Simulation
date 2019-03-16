@@ -11,10 +11,7 @@ mv = importlib.reload(mv)
 os.chdir(mv.sim_path_MAC + 'mapping')
 
 #%%
-l_xyz = np.array((600, 100, 122))
-
-space = 50
-beam_d = 1
+l_xyz = np.array((100, 100, 100))
 
 x_beg, y_beg, z_beg = (-l_xyz[0]/2, 0, 0)
 xyz_beg = np.array((x_beg, y_beg, z_beg))
@@ -37,8 +34,8 @@ z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
 c_before = np.load('chain_sum_len_before.npy')
 n_before = np.load('n_chains_before.npy')
 
-c_after = np.load('chain_sum_len_after.npy')
-n_after = np.load('n_chains_after.npy')
+c_after = np.load('chain_sum_len_after_С.npy')
+n_after = np.load('n_chains_after_С.npy')
 
 #%% before 2 nm
 c_x_2_b = np.sum(c_before[:, 25, :], axis=1)
@@ -74,7 +71,7 @@ plt.plot(x_grid_2nm, c_x_2_a / n_x_2_a)
 plt.xlabel('x, nm')
 plt.ylabel('AVG local chain length')
 plt.title('Chain local length distribution AFTER EXPOSURE, 2 nm')
-plt.legend()
+#plt.legend()
 plt.grid()
 plt.show()
 plt.savefig('AVG chains local 2nm after.png', dpi=300)
@@ -87,7 +84,7 @@ plt.plot(x_grid_2nm, c_x_100_a / n_x_100_a)
 plt.xlabel('x, nm')
 plt.ylabel('AVG local chain length')
 plt.title('Chain local length distribution AFTER EXPOSURE, 100 nm')
-plt.legend()
+#plt.legend()
 plt.grid()
 plt.show()
 plt.savefig('AVG chains local 100nm after.png', dpi=300)

@@ -11,7 +11,7 @@ os.chdir(mv.sim_path_MAC + 'make_e_data')
 
 #%%
 ## Usual
-n_files = 3000
+n_files = 500
 n_tracks = 100
 
 ## Bruk
@@ -36,11 +36,11 @@ n_tracks = 100
 #E0 = 20e+3
 
 ## experiment
-d_PMMA = 122
-E0 = 20e+3
+d_PMMA = 100
+E0 = 10e+3
 
 D = 0
-num = 2338
+num = 0
 
 while num < n_files:
 #while num < 1:
@@ -50,7 +50,7 @@ while num < n_files:
     DATA_P = DATA[np.where(DATA[:, mv.atom_id] != mv.Si)[0], :]
     DATA_Pn = DATA_P[np.where(DATA_P[:, mv.coll_id] > mv.elastic)[0], :]
     
-    fname = '../e_DATA/DATA_Pn_20keV_122nm/DATA_Pn_' + str(num) + '.npy'
+    fname = '../e_DATA/DATA_Pn_10keV_100nm/DATA_Pn_' + str(num) + '.npy'
     np.save(fname, DATA_Pn)
     
     print('file ' + fname + ' is saved')
