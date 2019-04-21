@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import copy
 import importlib
 import my_functions as mf
 import my_variables as mv
@@ -31,11 +32,11 @@ y_grid_2nm = (y_bins_2nm[:-1] + y_bins_2nm[1:]) / 2
 z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
 
 #%%
-c_before = np.load('chain_sum_len_before.npy')
-n_before = np.load('n_chains_before.npy')
+c_before = np.load('chain_sum_len_matrix_before.npy')
+n_before = np.load('n_chains_matrix_before.npy')
 
-c_after = np.load('chain_sum_len_after_С.npy')
-n_after = np.load('n_chains_after_С.npy')
+c_after = np.load('chain_sum_len_matrix_C_1.npy')
+n_after = np.load('n_chains_matrix_C_1.npy')
 
 #%% before 2 nm
 c_x_2_b = np.sum(c_before[:, 25, :], axis=1)
@@ -62,6 +63,16 @@ plt.legend()
 plt.grid()
 plt.show()
 plt.savefig('AVG chains local 100nm before.png', dpi=300)
+
+#%% after 2 nm imshow
+n_after_mod = copy.deepcopy(n_after)
+n_after_mod[np.where(n_after_mod == 0)] = 1
+
+chain_len_avg_after = c_after / n_after_mod
+chain_len_avg_after_mono = (chain_len_avg_after - 100) / np.abs(chain_len_avg_after - 100)
+
+plt.imshow(np.sum(chain_len_avg_after_mono[:, :, :], axis=1).transpose() / 50)
+plt.colorbar()
 
 #%% after 2 nm
 c_x_2_a = np.sum(c_after[:, 25, :], axis=1)

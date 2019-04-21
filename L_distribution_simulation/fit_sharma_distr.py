@@ -9,7 +9,7 @@ from scipy.optimize import curve_fit
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
-os.chdir(mv.sim_path_MAC + 'L_distributions_simulation')
+os.chdir(mv.sim_path_MAC + 'L_distribution_simulation')
 
 #%%
 def Flory_Schulz(k, N, p):

@@ -108,14 +108,14 @@ def get_resist_part_line(resist_matrix, x_ind, y_ind, z_ind, resist_part_ind):
 
 
 ## calculate local AVG chain length distribution
-def get_local_chain_len(res_shape, N_mon_max, chain_table):
+def get_local_chain_len(res_shape, N_mon_max, chain_table, N_chains):
     
     chain_sum_len_matrix = np.zeros(res_shape)
     n_chains_matrix = np.zeros(res_shape)
     
     for idx, chain in enumerate(chain_table):
         
-        mf.upd_progress_bar(idx, N_chains_total)
+        mf.upd_progress_bar(idx, N_chains)
         
         beg_ind = 0
         
@@ -161,5 +161,36 @@ def get_local_chain_len(res_shape, N_mon_max, chain_table):
                 inds_list.append(now_inds)
             
             beg_ind = end_ind + 1
-    
+            
     return chain_sum_len_matrix, n_chains_matrix
+
+
+## calculate final L distribution
+def get_L_final(chain_table):
+    
+    L_final = []
+
+    for i, now_chain in enumerate(chain_table):
+        
+        mf.upd_progress_bar(i, N_chains_total)
+        cnt = 0
+        
+        for line in now_chain:
+            
+            if np.all(line == uint16_max):
+                break
+            
+            mon_type = line[mon_type_ind]
+                    
+            if mon_type == 0:
+                cnt == 1
+            
+            elif mon_type == 1:
+                cnt += 1
+            
+            elif mon_type == 2:
+                cnt += 1
+                L_final.append(cnt)            
+                cnt = 0
+    
+    return np.array(L_final)

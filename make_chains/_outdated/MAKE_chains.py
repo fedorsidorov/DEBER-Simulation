@@ -3,19 +3,24 @@ import matplotlib.pyplot as plt
 import os
 from random import random
 
-sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
-            'Study/Simulation/'
+#sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
+#            'Study/Simulation/'
 #sim_path = '/home/fedor/Yandex.Disk/Study/Simulation/'
              
-os.chdir(sim_path + 'make_chains')
+#os.chdir(sim_path + 'make_chains')
 
-import sys
-sys.path.append(sim_path + 'MODULES')
+#import sys
+#sys.path.append(sim_path + 'MODULES')
 
 import importlib
 
 import my_functions as mf
 mf = importlib.reload(mf)
+
+import my_variables as mv
+mv = importlib.reload(mv)
+
+os.chdir(mv.sim_path_MAC + 'make_chains')
 
 #%%
 def check_chain(chain_coords, now_mon_coords, d_2):
@@ -28,7 +33,7 @@ def check_chain(chain_coords, now_mon_coords, d_2):
     return True
 
 #%%
-L_arr = np.load('L_arr_charma_10k.npy')
+#L_arr = np.load('L_arr_charma_10k.npy')
 d_mon = 0.28
 d_mon_2 = d_mon**2
 
@@ -49,7 +54,8 @@ chains_list = []
 
 while chain_num < n_chains:
     
-    L = int(L_arr[chain_num])
+#    L = int(L_arr[chain_num])
+    L = 500
     print('New chain, L =', L)
     
     chain_coords = np.zeros((L, 3))
@@ -117,8 +123,8 @@ chain_arr = chain_coords
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-beg=120
-end=135
+beg=0
+end=500
 
 ax.plot(chain_arr[beg-1:beg+1, 0], chain_arr[beg-1:beg+1, 1], chain_arr[beg-1:beg+1, 2], 'b--')
 ax.plot(chain_arr[beg:end, 0], chain_arr[beg:end, 1], chain_arr[beg:end, 2], 'bo-')

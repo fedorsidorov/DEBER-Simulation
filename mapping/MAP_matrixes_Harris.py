@@ -22,24 +22,24 @@ import my_mapping as mm
 mm = importlib.reload(mm)
 
 #%%
-e_matrix = np.load('../MATRIXES/Akatary/MATRIX_Akatary_100uC_C_exc.npy')
-resist_matrix = np.load('../MATRIXES/Akatary/MATRIX_resist_Akatary.npy')
-chain_table = np.load('../MATRIXES/Akatary/TABLE_chains_Akatary.npy')
+e_matrix =      np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
+resist_matrix = np.load('../MATRIXES/Harris/MATRIX_resist_Harris.npy')
+chain_table =   np.load('../MATRIXES/Harris/TABLE_chains_Harris.npy')
 
-dE_matrix = np.load('../MATRIXES/Akatary/MATRIX_dE_Akatary_100uC.npy')
+dE_matrix =     np.load('../MATRIXES/Harris/MATRIX_dE_Harris_100uC.npy')
 
-N_chains_total = 8336
-N_mon_chain_max = 8294
+N_chains_total = len(chain_table)
+N_mon_chain_max = len(chain_table[0])
 
 resist_shape = np.shape(resist_matrix)[:3]
 
 #%%
-chain_sum_len_matrix_before, n_chains_matrix_before =\
-    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
-
-#%%
-np.save('chain_sum_len_matrix_before.npy', chain_sum_len_matrix_before)
-np.save('n_chains_matrix_before.npy', n_chains_matrix_before)
+#chain_sum_len_matrix_before, n_chains_matrix_before =\
+#    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
+#
+##%%
+#np.save('Harris_chain_sum_len_matrix_before.npy', chain_sum_len_matrix_before)
+#np.save('Harris_n_chains_matrix_before.npy', n_chains_matrix_before)
 
 #%%
 p_scission = 0.5
@@ -155,6 +155,35 @@ G_value = n_scissions / (E_dep / 100)
 #G_value = n_events_total / (E_dep / 100)
 
 print(G_value)
+
+#%%
+L_final = []
+
+for i, now_chain in enumerate(chain_table):
+    
+    mf.upd_progress_bar(i, N_chains_total)
+    cnt = 0
+    
+    for line in now_chain:
+        
+        if np.all(line == mm.uint16_max):
+            break
+        
+        mon_type = line[mm.mon_type_ind]
+                
+        if mon_type == 0:
+            cnt == 1
+        
+        elif mon_type == 1:
+            cnt += 1
+        
+        elif mon_type == 2:
+            cnt += 1
+            L_final.append(cnt)            
+            cnt = 0
+
+
+L_final = mm.get_L_final(chain_table)
 
 #%%
 chain_sum_len_matrix_C_1, n_chains_matrix_C_1 =\

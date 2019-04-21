@@ -81,17 +81,16 @@ lz = 100
 theta = np.deg2rad(109)
 
 #n_chains = len(L_arr)
-n_chains = 1
+n_chains = 10000
 
 #chain_num = 7961
-chain_num = 0
+chain_num = 217
 
 chains_list = []
 
 while chain_num < n_chains:
     
-#    L = int(L_arr[chain_num])
-    L = 500
+    L = int(L_arr[chain_num])
     print('New chain, L =', L)
     
     chain_coords = np.zeros((L, 3))
@@ -150,7 +149,7 @@ while chain_num < n_chains:
     
     dirname = '../CHAINS/950K_100nm/'
     filename = 'chain_' + str(chain_num) + '.npy'
-#    np.save(dirname + filename, chain_coords)
+    np.save(dirname + filename, chain_coords)
     print(filename + ' is saved')
     chains_list.append(chain_coords)
     chain_num += 1
@@ -161,7 +160,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 beg=0
-end=500
+end=8055
 
 ax.plot(chain_arr[beg-1:beg+1, 0], chain_arr[beg-1:beg+1, 1], chain_arr[beg-1:beg+1, 2],\
         'b--')

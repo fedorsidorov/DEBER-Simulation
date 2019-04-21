@@ -12,13 +12,13 @@ import my_indexes as mi
 import my_constants as mc
 import my_mapping as mm
 
+os.chdir(mv.sim_path_MAC + 'mapping')
+
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 mi = importlib.reload(mi)
 mc = importlib.reload(mc)
 mm = importlib.reload(mm)
-
-os.chdir(mv.sim_path_MAC + 'mapping')
 
 #%%
 e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_6e-5C_cm2_C_exc.npy')

@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
-            'Study/Simulation/'
-#sim_path = '/home/fedor/Yandex.Disk/Study/Simulation/'
+#sim_path = '/Users/fedor/.yandex.disk/434410540/Yandex.Disk.localized/' +\
+#            'Study/Simulation/'
+sim_path = '/home/fedor/Yandex.Disk/Study/Simulation/'
              
 os.chdir(sim_path + 'make_chains')
 

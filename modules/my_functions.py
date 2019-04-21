@@ -166,7 +166,8 @@ def get_coll_data(d_PMMA, E_prev, O_prev, x, z):
     
     ## if an electron enters im PMMA, continue moving without changing direction
     if z == 0:# or np.abs(z - d_PMMA) < 1e-10:
-        return (atom_id, coll_id, E_prev, dxdydz.transpose(), O_prev, False, 0, 0, 0)
+#        return (atom_id, coll_id, E_prev, dxdydz.transpose(), O_prev, False, 0, 0, 0)
+        return (100, -100, E_prev, dxdydz.transpose(), O_prev, False, 0, 0, 0)
     
     if coll_id == 0: ## elastic scattering
         dE = 0
@@ -178,22 +179,38 @@ def get_coll_data(d_PMMA, E_prev, O_prev, x, z):
     
     else: ## ionization
         subshell_id = coll_id - 2
+        
+        E_bind = ma.ATOMS_ION_E_BIND[atom_id][subshell_id]
+        
         spectra_line = ma.ATOMS_ION_SPECTRA[atom_id][subshell_id][E_ind, :]
         E_ext = ma.ATOMS_ION_E_SPECTRA[atom_id][subshell_id]
-        E2nd = E_ext[get_closest_el_ind(spectra_line, random())]
         
-        if E2nd > E_prev:
-            E2nd = E_prev
+        flag = False
         
-        else:
-            is2nd = True
-            On, O2nd = get_final_On_and_O2nd(E_prev, E2nd, On)
+        E2nd = np.nan
+        
+        while not flag:
             
-        dE = E2nd + ma.ATOMS_ION_E_BIND[atom_id][subshell_id]
-        E = E_prev - dE
+            E2nd = E_ext[get_closest_el_ind(spectra_line, random())]
+            
+            if E2nd < E_prev - E_bind:
+                flag = True
         
-    if dE > 2e+4:
-        print('atom_id=', atom_id, 'coll_id=', coll_id, 'E=', E, 'E2nd=', E2nd, 'dE=', dE)
+        is2nd = True
+        On, O2nd = get_final_On_and_O2nd(E_prev, E2nd, On)
+            
+#        dE = E2nd + ma.ATOMS_ION_E_BIND[atom_id][subshell_id]
+        dE = E_bind
+        
+        E = E_prev - E_bind - E2nd
+    
+    
+    if E_prev - dE < 15:
+        dE = E_prev
+        E = 0
+    
+#    if dE > 2e+4:
+#        print('atom_id=', atom_id, 'coll_id=', coll_id, 'E=', E, 'E2nd=', E2nd, 'dE=', dE)
         
     return atom_id, coll_id, E, dxdydz.transpose(), On, is2nd, E2nd, O2nd, dE
 
@@ -268,22 +285,23 @@ def plot_DATA(DATA, d_PMMA=0, coords=[0, 2]):
         beg = np.where(DATA[:, 0] == tn)[0][0]
         end = np.where(DATA[:, 0] == tn)[0][-1] + 1
         ax.plot(DATA[beg:end, 5 + coords[0]], DATA[beg:end, 5 + coords[1]], linewidth=0.7)
-    #    inds_el = beg + np.where(DATA[beg:end, 3] == 0)[0]
-    #    inds_ion = beg + np.where(DATA[beg:end, 3] >= 2)[0]
-    #    inds_exc = beg + np.where(DATA[beg:end, 3] == 1)[0]
-    #    ax.plot(DATA[inds_el, 5], DATA[inds_el, 7], 'r.')
-    #    ax.plot(DATA[inds_ion, 5], DATA[inds_ion, 7], 'b.')
-    #    ax.plot(DATA[inds_exc, 5], DATA[inds_exc, 7], 'g.')
+        
+#        inds_el = beg + np.where(DATA[beg:end, 3] == 0)[0]
+#        inds_ion = beg + np.where(DATA[beg:end, 3] >= 2)[0]
+#        inds_exc = beg + np.where(DATA[beg:end, 3] == 1)[0]
+#        ax.plot(DATA[inds_el, 5], DATA[inds_el, 7], 'r.')
+#        ax.plot(DATA[inds_ion, 5], DATA[inds_ion, 7], 'b.')
+#        ax.plot(DATA[inds_exc, 5], DATA[inds_exc, 7], 'g.')
     
-    if coords[1] == 2:
-        points = np.arange(-3e+3, 3e+3, 10)
-        ax.plot(points, np.zeros(np.shape(points)), 'k')
-        ax.plot(points, np.ones(np.shape(points))*d_PMMA, 'k')
+#    if coords[1] == 2:
+#        points = np.arange(-3e+3, 3e+3, 10)
+#        ax.plot(points, np.zeros(np.shape(points)), 'k')
+#        ax.plot(points, np.ones(np.shape(points))*d_PMMA, 'k')
     
     ax.xaxis.get_major_formatter().set_powerlimits((0, 1))
     ax.yaxis.get_major_formatter().set_powerlimits((0, 1))
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.title('Direct Monte-Carlo simulation')
+#    plt.title('Direct Monte-Carlo simulation')
     plt.xlabel('x, nm')
     plt.ylabel('z, nm')
     plt.axis('on')
@@ -390,11 +408,8 @@ def delete_nan_rows(array):
 ##    return DATA
 #
 #
-#def get_n_electrons(dose_C_cm2, square_side_nm):
-#    q_el_C = 1.6e-19
-#    A_cm2 = (square_side_nm * 1e-7)**2
-#    Q_C = dose_C_cm2 * A_cm2
-#    return int(np.round(Q_C / q_el_C))
-    
-    
-    
+def get_n_electrons(dose_C_cm2, square_side_nm):
+    q_el_C = 1.6e-19
+    A_cm2 = (square_side_nm * 1e-7)**2
+    Q_C = dose_C_cm2 * A_cm2
+    return int(np.round(Q_C / q_el_C))
