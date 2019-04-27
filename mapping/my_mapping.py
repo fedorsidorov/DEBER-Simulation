@@ -19,10 +19,6 @@ mon_type_ind = -1
 uint16_max = 65535
 
 #%% constants
-N_chains_total = 63306
-N_mon_chain_max = 9780
-N_mon_cell_max = 810
-
 l_xyz = np.array((600, 100, 122))
 
 space = 50

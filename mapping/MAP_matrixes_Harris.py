@@ -11,6 +11,8 @@ import my_variables as mv
 import my_indexes as mi
 import my_constants as mc
 
+import scipy
+
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 mi = importlib.reload(mi)
@@ -22,16 +24,22 @@ import my_mapping as mm
 mm = importlib.reload(mm)
 
 #%%
-e_matrix =      np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
+e_matrix = np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_ion.npy') +\
+           np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
+#e_matrix = np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
+                
 resist_matrix = np.load('../MATRIXES/Harris/MATRIX_resist_Harris.npy')
-chain_table =   np.load('../MATRIXES/Harris/TABLE_chains_Harris.npy')
+chain_table   = np.load('../MATRIXES/Harris/TABLE_chains_Harris.npy')
+dE_matrix     = np.load('../MATRIXES/Harris/MATRIX_dE_Harris_100uC.npy')
 
-dE_matrix =     np.load('../MATRIXES/Harris/MATRIX_dE_Harris_100uC.npy')
-
-N_chains_total = len(chain_table)
+N_chains_total  = len(chain_table)
 N_mon_chain_max = len(chain_table[0])
 
 resist_shape = np.shape(resist_matrix)[:3]
+
+scission_matrix = np.zeros(np.shape(e_matrix))
+
+sci_per_mol_matrix = np.zeros(N_chains_total)
 
 #%%
 #chain_sum_len_matrix_before, n_chains_matrix_before =\
@@ -42,7 +50,7 @@ resist_shape = np.shape(resist_matrix)[:3]
 #np.save('Harris_n_chains_matrix_before.npy', n_chains_matrix_before)
 
 #%%
-p_scission = 0.5
+p_scission = 0.4
 n_scissions = 0
 
 n_events_total = 0
@@ -70,6 +78,8 @@ for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
         
         n_chain, n_mon, mon_type = mm.get_resist_part_line(resist_matrix,\
                                             x_ind, y_ind, z_ind, resist_part_ind)
+        
+        sci_per_mol_matrix[n_chain] += 1
         
 ############################################################################### 
         if mon_type == mm.mid_mon: ## bonded monomer ##########################
@@ -101,6 +111,7 @@ for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
                 print(x_ind, y_ind, z_ind)
             
             n_scissions += 1
+            scission_matrix[x_ind, y_ind, z_ind] += 1
 
 ###############################################################################
         elif mon_type in [mm.beg_mon, mm.end_mon]: ## half-bonded monomer #####
@@ -131,6 +142,7 @@ for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
                 print('error 2', next_mon_type)
             
             n_scissions += 1
+            scission_matrix[x_ind, y_ind, z_ind] += 1
             
 ###############################################################################
         elif mon_type == mm.free_mon: ## free monomer with ester group ########
@@ -141,6 +153,7 @@ for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
                              n_chain, n_mon, mm.free_rad_mon)
             
             n_scissions += 1
+            scission_matrix[x_ind, y_ind, z_ind] += 1
         
         elif mon_type == mm.free_rad_mon:
             continue
@@ -182,8 +195,44 @@ for i, now_chain in enumerate(chain_table):
             L_final.append(cnt)            
             cnt = 0
 
+#L_final = mm.get_L_final(chain_table)
 
-L_final = mm.get_L_final(chain_table)
+#%%
+L_final_arr = np.array(L_final)
+
+#%%
+L_final_arr = np.load('L_final_2C_all.npy')
+
+#%%
+log_mw = np.log10(L_final_arr * 100)
+plt.hist(log_mw, bins=20, cumulative=False, label='sample', rwidth=0.8,\
+         normed=True, alpha=0.6)
+
+data_B = np.loadtxt(mv.sim_path_MAC + 'make_chains/harris1973_B.dat')
+
+x_B = data_B[:, 0]
+y_B = data_B[:, 1]
+
+x_B_log = np.log10(x_B)
+X = np.linspace(x_B_log[0], x_B_log[-1], 200)
+Y = mf.log_interp1d(x_B_log, y_B)(X)
+
+Y = scipy.signal.medfilt(Y, 5)
+
+X_diff = X[:-1]
+Y_diff = np.diff(Y)
+
+#plt.plot(np.log10(x_B), y_B, label='model')
+plt.plot(X_diff, Y_diff/np.max(Y_diff), label='model')
+
+plt.title('Harris chain mass distribution after exposure, 2C ion+exc')
+plt.xlabel('log(m$_w$)')
+plt.ylabel('probability')
+plt.xlim((1.5, 5.5))
+plt.ylim((0, 1))
+plt.legend()
+plt.grid()
+plt.show()
 
 #%%
 chain_sum_len_matrix_C_1, n_chains_matrix_C_1 =\
@@ -192,3 +241,10 @@ chain_sum_len_matrix_C_1, n_chains_matrix_C_1 =\
 #%%
 np.save('chain_sum_len_matrix_C_1.npy', chain_sum_len_matrix_C_1)
 np.save('n_chains_matrix_C_1.npy', n_chains_matrix_C_1)
+
+#%%
+sci_avg = np.average(sci_per_mol_matrix)
+
+g = sci_avg * 1.19e-21 * 6.02e+23 / (np.sum(dE_matrix) / (100*100*500) * 9.5e+5)
+
+print(g)

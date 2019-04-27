@@ -41,11 +41,9 @@ y_grid_2nm = (y_bins_2nm[:-1] + y_bins_2nm[1:]) / 2
 z_grid_2nm = (z_bins_2nm[:-1] + z_bins_2nm[1:]) / 2
 
 #%%
-e_matrix_dE = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)-1))
-
-#e_matrix_C = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)-1))
 e_matrix_C_exc = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)-1))
 e_matrix_C_ion = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)-1))
+e_matrix_dE    = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)-1))
 
 source_dir = mv.sim_path_MAC + 'e_DATA/DATA_Pn_10keV_500nm/'
 
