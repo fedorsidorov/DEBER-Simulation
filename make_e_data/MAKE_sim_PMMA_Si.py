@@ -40,11 +40,15 @@ n_tracks = 100
 #E0 = 10e+3
 
 ## Harris
-d_PMMA = 500
-E0 = 10e+3
+#d_PMMA = 500
+#E0 = 10e+3
+
+## Greeneich
+d_PMMA = 300
+E0 = 20e+3
 
 D = 0
-num = 0
+num = 1
 
 while num < n_files:
 #while num < 1:
@@ -54,7 +58,7 @@ while num < n_files:
     DATA_P = DATA[np.where(DATA[:, mv.atom_id] < mv.Si)[0], :]
     DATA_Pn = DATA_P[np.where(DATA_P[:, mv.coll_id] > mv.elastic)[0], :]
     
-    fname = '../e_DATA/DATA_Harris_new/DATA_Pn_' + str(num) + '.npy'
+    fname = '../e_DATA/DATA_Pn_20keV_300nm/DATA_Pn_' + str(num) + '.npy'
     np.save(fname, DATA_Pn)
     
     print('file ' + fname + ' is saved')
@@ -62,7 +66,7 @@ while num < n_files:
     num += 1
 
 #%%
-#DATA = np.load('DATA_Pn_20keV_80nm/DATA_Pn_554.npy')
+DATA = np.load('../e_DATA/DATA_Pn_20keV_300nm/DATA_Pn_0.npy')
 
 #%%
 #mf.shift_DATA(DATA, 200, 0)

@@ -22,8 +22,8 @@ import my_mapping as mm
 mm = importlib.reload(mm)
 
 #%%
-e_matrix  = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_C_ion.npy')
-dE_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_dE.npy')
+e_matrix  = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_C_ion_lines.npy')
+dE_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_dE_lines.npy')
 
 resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_resist_Aktary.npy')
 chain_table   = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/TABLE_chains_Aktary.npy')
@@ -37,6 +37,17 @@ sci_per_mol_matrix = np.zeros(N_chains_total)
 
 resist_shape = np.shape(resist_matrix)[:3]
 
+#%% check N max
+lens_list = []
+
+for now_chain in chain_table:
+    
+    now_len = len(np.where(now_chain[:, -1] != mm.uint16_max)[0])
+    
+    lens_list.append(now_len)
+
+lens_array = np.array(lens_list)
+
 #%%
 monomer_matrix = np.zeros(np.shape(e_matrix))
 
@@ -47,12 +58,12 @@ for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
         len(np.where(resist_matrix[x_ind, y_ind, z_ind, :, 0]!=mm.uint16_max)[0])
 
 #%%
-#chain_sum_len_matrix_before, n_chains_matrix_before =\
-#    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
-#
-##%%
-#np.save('chain_sum_len_matrix_before.npy', chain_sum_len_matrix_before)
-#np.save('n_chains_matrix_before.npy', n_chains_matrix_before)
+chain_sum_len_matrix_before, n_chains_matrix_before =\
+    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
+
+#%%
+np.save('Aktary/chain_sum_len_matrix_before.npy', chain_sum_len_matrix_before)
+np.save('Aktary/n_chains_matrix_before.npy', n_chains_matrix_before)
 
 #%%
 p_scission = 0.4
@@ -175,12 +186,13 @@ G_value = n_scissions / (E_dep / 100)
 print(G_value)
 
 #%%
-#chain_sum_len_matrix_2C_ion, n_chains_matrix_2C_ion =\
-#    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
-#
-##%%
-#np.save('chain_sum_len_matrix_2C_ion.npy', chain_sum_len_matrix_2C_ion)
-#np.save('n_chains_matrix_2C_ion.npy', n_chains_matrix_2C_ion)
+chain_sum_len_matrix_2C_ion, n_chains_matrix_2C_ion =\
+    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
+
+#%%
+np.save('Aktary/chain_sum_len_matrix_2C_ion.npy', chain_sum_len_matrix_2C_ion)
+np.save('Aktary/n_chains_matrix_2C_ion.npy', n_chains_matrix_2C_ion)
+np.save('Aktary/scission_matrix.npy', scission_matrix)
 
 #%%
 #monomer_2D = np.sum(monomer_matrix, axis=1) / 50
@@ -201,5 +213,3 @@ for x_ind, z_ind in product(range(resist_shape[0]), range(resist_shape[2])):
     for i in range(1, 11):
         Cn_2D[x_ind, z_ind] += (n_avg - 1)**(i-1) / (np.math.factorial(i-1))\
             * np.exp(-n_avg + 1)
-        
-
