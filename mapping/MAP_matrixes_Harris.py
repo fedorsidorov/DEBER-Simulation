@@ -24,9 +24,8 @@ import my_mapping as mm
 mm = importlib.reload(mm)
 
 #%%
-e_matrix = np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_ion.npy') +\
-           np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
-#e_matrix = np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
+e_matrix = np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_ion.npy')
+e_matrix += np.load('../MATRIXES/Harris/MATRIX_Harris_100uC_C_exc.npy')
                 
 resist_matrix = np.load('../MATRIXES/Harris/MATRIX_resist_Harris.npy')
 chain_table   = np.load('../MATRIXES/Harris/TABLE_chains_Harris.npy')
@@ -50,7 +49,8 @@ sci_per_mol_matrix = np.zeros(N_chains_total)
 #np.save('Harris_n_chains_matrix_before.npy', n_chains_matrix_before)
 
 #%%
-p_scission = 0.4
+#p_scission = 0.5
+p_scission = 1
 n_scissions = 0
 
 n_events_total = 0
@@ -195,13 +195,10 @@ for i, now_chain in enumerate(chain_table):
             L_final.append(cnt)            
             cnt = 0
 
-#L_final = mm.get_L_final(chain_table)
-
-#%%
 L_final_arr = np.array(L_final)
 
 #%%
-L_final_arr = np.load('L_final_2C_all.npy')
+L_final_arr = np.load('Harris/L_final_2C_all_Harris.npy')
 
 #%%
 log_mw = np.log10(L_final_arr * 100)
@@ -217,7 +214,7 @@ x_B_log = np.log10(x_B)
 X = np.linspace(x_B_log[0], x_B_log[-1], 200)
 Y = mf.log_interp1d(x_B_log, y_B)(X)
 
-Y = scipy.signal.medfilt(Y, 5)
+#Y = scipy.signal.medfilt(Y, 5)
 
 X_diff = X[:-1]
 Y_diff = np.diff(Y)
@@ -225,7 +222,7 @@ Y_diff = np.diff(Y)
 #plt.plot(np.log10(x_B), y_B, label='model')
 plt.plot(X_diff, Y_diff/np.max(Y_diff), label='model')
 
-plt.title('Harris chain mass distribution after exposure, 2C ion+exc')
+plt.title('Harris chain mass distribution after exposure, 2C ion')
 plt.xlabel('log(m$_w$)')
 plt.ylabel('probability')
 plt.xlim((1.5, 5.5))

@@ -140,6 +140,8 @@ np.save('MATRIX_Aktary_100uC_C_ion_lines.npy', e_matrix_C_ion)
 np.save('MATRIX_Aktary_100uC_dE_lines.npy', e_matrix_dE)
 
 #%%
+e_matrix_dE = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_dE_lines.npy')
+
 eps_xz = np.sum(e_matrix_dE, axis=(1)) / (100 * 2 * 2 * 1e-21)
 Mf = 1 / (1/950e+3 + 1.9e-2 * eps_xz / (1.19 * 6.02e+23))
 
@@ -150,6 +152,7 @@ plt.title('LOG chain M after exposure')
 plt.xlabel('x/2, nm')
 plt.ylabel('z/2, nm')
 plt.show()
+plt.savefig('Aktary LOG chain M after.png', dpi=300)
 
 #%% development
 R0 = 84
@@ -165,9 +168,7 @@ plt.title('Resist dissolution rate, A/min')
 plt.xlabel('x/2, nm')
 plt.ylabel('z/2, nm')
 plt.show()
-
-#dE_avg_xz = np.average(eps_matrix_xz)
-#e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_6e-5_pC_cm2_C_exc.npy')
+plt.savefig('Aktary resist dissolution rate.png', dpi=300)
 
 #%% drawing
 plt.figure()
