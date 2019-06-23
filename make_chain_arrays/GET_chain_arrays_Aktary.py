@@ -7,12 +7,10 @@ from itertools import product
 import my_functions as mf
 import my_variables as mv
 import my_indexes as mi
-import my_mapping as mm
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 mi = importlib.reload(mi)
-mm = importlib.reload(mm)
 
 os.chdir(mv.sim_path_MAC + 'make_chain_arrays')
 
@@ -23,6 +21,8 @@ source_dir = mv.sim_path_MAC + 'CHAINS/Aktary_950K_100nm/comb_100x100x100_center
 N_chains_total = 9331
 N_mon_chain_max = 6590
 N_mon_cell_max = 400
+
+mon_type_ind = -1
 
 l_xyz = np.array((100, 100, 100))
 
@@ -69,7 +69,7 @@ for chain_num in range(N_chains_total):
             mon_type = 1
         
         if not (np.all(mon_line >= xyz_beg) and np.all(mon_line <= xyz_end)):
-            chain_table[chain_num, n_mon, mm.mon_type_ind] = mon_type
+            chain_table[chain_num, n_mon, mon_type_ind] = mon_type
             continue
         
         now_x, now_y, now_z = mon_line

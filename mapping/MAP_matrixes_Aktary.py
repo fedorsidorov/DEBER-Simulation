@@ -22,8 +22,8 @@ import my_mapping as mm
 mm = importlib.reload(mm)
 
 #%%
-e_matrix  = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_C_ion_lines.npy')
-dE_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_100uC_dE_lines.npy')
+e_matrix  = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_Aktary_31files_C_ion.npy')
+dE_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_dE_Aktary_31files.npy')
 
 resist_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/MATRIX_resist_Aktary.npy')
 chain_table   = np.load(mv.sim_path_MAC + 'MATRIXES/Aktary/TABLE_chains_Aktary.npy')
@@ -58,12 +58,11 @@ for x_ind, y_ind, z_ind in product(range(resist_shape[0]),\
         len(np.where(resist_matrix[x_ind, y_ind, z_ind, :, 0]!=mm.uint16_max)[0])
 
 #%%
-chain_sum_len_matrix_before, n_chains_matrix_before =\
-    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
-
-#%%
-np.save('Aktary/chain_sum_len_matrix_before.npy', chain_sum_len_matrix_before)
-np.save('Aktary/n_chains_matrix_before.npy', n_chains_matrix_before)
+#chain_sum_len_matrix_before, n_chains_matrix_before =\
+#    mm.get_local_chain_len(resist_shape, N_mon_chain_max, chain_table, N_chains_total)
+#
+#np.save('Aktary/chain_sum_len_matrix_before.npy', chain_sum_len_matrix_before)
+#np.save('Aktary/n_chains_matrix_before.npy', n_chains_matrix_before)
 
 #%%
 p_scission = 0.4
@@ -219,6 +218,11 @@ for x_ind, z_ind in product(range(resist_shape[0]), range(resist_shape[2])):
 
 sci_xz = (np.sum(scission_matrix, axis=1)).transpose()
 
+sci_xz_int = np.array(sci_xz, dtype=np.uint8)
+
+np.savetxt('2500_pC_cm.txt', sci_xz_int, fmt='%d', delimiter=',')
+
+#%%
 plt.imshow(sci_xz)
 #plt.xticks((1, 2, 3))
 

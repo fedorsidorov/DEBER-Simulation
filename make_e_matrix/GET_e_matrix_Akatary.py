@@ -52,13 +52,18 @@ e_matrix_C_ion = np.zeros((len(x_bins_2nm)-1, len(y_bins_2nm)-1, len(z_bins_2nm)
 source_dir = mv.sim_path_MAC + 'e_DATA/DATA_Pn_10keV_100nm/'
 
 #%%
+charge = 2500e-12 * 200e-9
+n_el = charge / 1.6e-19
+n_files = n_el / 100
+
+#%%
 n_files_total = 600
 
-n_files_required = int(20 * (100 + 50*2) * (1e-7)**2 * 100e-6 / 1.6e-19 / 100)
+#n_files_required = int(20 * (100 + 50*2) * (1e-7)**2 * 100e-6 / 1.6e-19 / 100)
+n_files_required = 31
 
 n_events = 0
 
-#x_positions = [-80, -60, -40, -20, 0, 20, 40, 60, 80]
 x_positions = [0]
 
 for x_pos in x_positions:
@@ -126,11 +131,11 @@ e_matrix_C_ion = np.array(e_matrix_C_ion, dtype=np.uint8)
 
 print('e_matrix size, Mb:', e_matrix_C_exc.nbytes / 1024**2)
 
-np.save('MATRIX_Aktary_100uC_C.npy',     e_matrix_C)
-np.save('MATRIX_Aktary_100uC_C_exc.npy', e_matrix_C_exc)
-np.save('MATRIX_Aktary_100uC_C_ion.npy', e_matrix_C_ion)
+np.save('MATRIX_Aktary_31files_C.npy',     e_matrix_C)
+np.save('MATRIX_Aktary_31files_C_exc.npy', e_matrix_C_exc)
+np.save('MATRIX_Aktary_31files_C_ion.npy', e_matrix_C_ion)
 
-np.save('MATRIX_dE_Aktary_100uC.npy',    e_matrix_dE)
+np.save('MATRIX_dE_Aktary_31files.npy',    e_matrix_dE)
 
 #%%
 #e_matrix = np.load(mv.sim_path_MAC + 'MATRIXES/MATRIX_6e-5_pC_cm2_C_exc.npy')
