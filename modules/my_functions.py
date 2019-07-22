@@ -18,6 +18,8 @@ mv = importlib.reload(mv)
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+from math import gamma
+
 #%% Non-simulation functions
 def upd_progress_bar(progress, total):
     barLength, status = 20, ''
@@ -413,3 +415,24 @@ def get_n_electrons(dose_C_cm2, square_side_nm):
     A_cm2 = (square_side_nm * 1e-7)**2
     Q_C = dose_C_cm2 * A_cm2
     return int(np.round(Q_C / q_el_C))
+
+#%%
+def get_schulz_zimm(Mn, Mw, x):
+    
+    z = Mn / (Mw - Mn)
+    l = 1 / (Mw - Mn)
+    
+#    f = l**z / gamma(z) * np.power(x, z-1) * np.exp(-l*x)
+    f = l**z / (gamma(z) * Mn) * np.power(x, z) * np.exp(-l*x)
+    
+    return f
+
+
+
+
+
+
+
+
+
+

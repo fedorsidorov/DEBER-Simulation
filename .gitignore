@@ -108,3 +108,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+diel_responce/diff_IMFP_inv_arr.npy

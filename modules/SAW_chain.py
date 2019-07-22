@@ -1,6 +1,6 @@
 #%% Import
 import numpy as np
-import os
+#import os
 import importlib
 import my_functions as mf
 import my_variables as mv
@@ -11,7 +11,7 @@ from random import uniform
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 
-os.chdir(mv.sim_path_MAC + 'random_walk')
+#os.chdir(mv.sim_path_MAC + 'random_walk')
 
 from numpy import sin, cos, arccos
 
@@ -37,7 +37,7 @@ def get_On(phi, theta, O_pre):
 
 def make_PMMA_chain(chain_len):
 
-    step = 1
+    step = 0.28
     step_2 = step**2
     
     chain_len = 200
@@ -141,6 +141,3 @@ def check_angles(chain_arr):
         return True
     
     return False
-
-
-

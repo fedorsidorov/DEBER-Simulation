@@ -37,6 +37,8 @@ n_PMMA_at = n_PMMA*(5 + 2 + 8)
 CONC_at = {'H': n_H, 'C': n_C, 'O': n_O, 'Si': n_Si}
 CONC = [n_PMMA_at, n_PMMA_at, n_PMMA_at, n_Si]
 
+m_PMMA_mon = u_PMMA / Na
+
 #%%
 tr_num, par_num = 0, 1
 atom_id, coll_id = 2, 3

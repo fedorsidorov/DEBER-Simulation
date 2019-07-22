@@ -141,6 +141,3 @@ def check_angles(chain_arr):
         return True
     
     return False
-
-
-

@@ -2,13 +2,20 @@
 import numpy as np
 
 #%% Variables
-e = 4.8e-10
-m = 9.11e-28
+#e = 4.8e-10
+e = 1.6e-19
+#m = 9.11e-28
+m = 9.1e-31
 m_eV = 511e+3
-h = 6.63e-27
-eV = 1.6e-12
+h = 6.626e-34
+hbar = 1.054e-34
+#eV = 1.6e-12
+eV = 1.6e-19
 E0 = 20e+3
 Na = 6.02e+23
+eps0 = 8.854e-12
+k_el = 1 / (4*np.pi*eps0)
+c = 3e+8
 
 Z_H = 1
 u_H = 1.01
@@ -40,32 +47,7 @@ CONC = [n_PMMA_at, n_PMMA_at, n_PMMA_at, n_Si]
 
 #%%
 sim_path_MAC = '/Users/fedor/Documents/DEBER-Simulation/'
-#sim_path_FTIAN = '/home/fedor/Yandex.Disk/Study/Simulation/'
 
-#%% Sharma cube parameters
-cube_size = 10.
-cell_size = 2.
-
-eps = 1e-3
-
-## min and max coordinates
-xyz_min = np.array((0., 0., 0.))
-xyz_max = np.array((100., 100., 160.))
-xyz_max_new = np.array((100., 100., 480.))
-
-## cubes parameters
-n_X, n_Y, n_Z = (np.round((xyz_max - xyz_min) / cube_size)).astype(int)
-_, _, n_Z_new = (np.round((xyz_max_new - xyz_min) / cube_size)).astype(int)
-n_XY = n_X * n_Y
-n_x = n_y = n_z = int(cube_size / cell_size)
-
-## chains
-n_chains = 12709
-n_chains_short = 12643
-n_mon_max = 325
-n_part_max = 600
-chain_len_max = 8294
-chain_len_max_short = 6000
 
 #%%
 uint16_max = 65535
