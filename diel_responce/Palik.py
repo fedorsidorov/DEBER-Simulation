@@ -7,7 +7,7 @@ import my_variables as mv
 import my_constants as mc
 import matplotlib.pyplot as plt
 
-from scipy.optimize import curve_fit
+#from scipy.optimize import curve_fit
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
@@ -16,29 +16,50 @@ mc = importlib.reload(mc)
 os.chdir(mv.sim_path_MAC + 'diel_responce')
 
 #%%
-Palik_arr = np.loadtxt('curves/Palik_Si_E_n_k.txt')
+Palik_arr = np.loadtxt('curves/Palik_Si_E_n_k.txt')[:-3, :]
 
-#n_arr = np.loadtxt('curves/Palik_Si_n.txt')
-k_arr = np.loadtxt('curves/Palik_Si_k.txt')
+E_arr_Palik = Palik_arr[::-1, 0]
+n_arr = Palik_arr[::-1, 1]
+k_arr = Palik_arr[::-1, 2]
 
-#E_n = mc.h * mc.c / (n_arr[:, 0] * 1e-6) / mc.eV
-#E_k = mc.h * mc.c / (k_arr[:, 0] * 1e-6) / mc.eV
+plt.loglog(E_arr_Palik, n_arr, label='n')
+plt.loglog(E_arr_Palik, k_arr, label='k')
 
-plt.loglog(E_n, n_arr[:, 1])
-plt.loglog(E_k, k_arr[:, 1])
+plt.title('Palik optical measurements for Si')
+plt.xlabel('E, eV')
+plt.ylabel('value')
 
-E_arr = np.logspace(0.5, 3.2, 1000)
+plt.legend()
+plt.ylim(1e-6, 1e+1)
+plt.grid()
+plt.show()
 
-N_arr = mf.log_interp1d(E_n, n_arr[:, 1])(E_arr)
-K_arr = mf.log_interp1d(E_k, k_arr[:, 1])(E_arr)
+#%%
+E_arr = np.logspace(0, 3.3, 5000)
 
-plt.loglog(E_arr, N_arr)
-plt.loglog(E_arr, K_arr)
+N_arr = mf.log_interp1d(E_arr_Palik, n_arr)(E_arr)
+K_arr = mf.log_interp1d(E_arr_Palik, k_arr)(E_arr)
+
+plt.loglog(E_arr, N_arr, '.')
+plt.loglog(E_arr, K_arr, '.')
 
 #%%
 Im_arr = 2 * N_arr * K_arr / ( (N_arr**2 - K_arr**2)**2 + (2*N_arr*K_arr)**2 )
 
 plt.loglog(E_arr, Im_arr, label='Im[$1/\epsilon$]')
+
+#plt.legend()
+#plt.xlabel('E, eV')
+#plt.ylabel('Im[1/eps]')
+#plt.grid()
+#plt.show()
+
+#%%
+eps = (N_arr**2 - K_arr**2) + (2*N_arr*K_arr)*1j
+
+Im_arr_2 = np.imag(-1/eps)
+
+plt.loglog(E_arr, Im_arr_2, 'r.', label='Im[$1/\epsilon$] 2')
 
 plt.legend()
 plt.xlabel('E, eV')
@@ -125,4 +146,6 @@ plt.show()
 sun_hui = np.loadtxt('curves/sun hui v chai.txt')
 
 plt.loglog(sun_hui[:, 0], sun_hui[:, 1])
+
+#%%
 

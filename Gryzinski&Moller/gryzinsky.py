@@ -142,7 +142,7 @@ total_cs = total_cs_1s+total_cs_2s+total_cs_2p+total_cs_3s+total_cs_3p
 
 plt.loglog(E_arr, total_cs * mc.n_Si, label='My total inv IMFP')
 
-plt.loglog(arr_Tung[:, 0], arr_Tung[:, 1] * 1e+8)
+plt.loglog(arr_Tung[:, 0], arr_Tung[:, 1] * 1e+8, label='Tung total inv IMFP')
 
 plt.xlim(1e+0, 1e+5)
 #plt.ylim(1e+4, 1e+8)

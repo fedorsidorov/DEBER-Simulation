@@ -109,3 +109,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 diel_responce/diff_IMFP_inv_arr.npy
+diel_responce/diff_IMFP_inv_arr_NEW.npy
+diel_responce/DIFF_MU_SI_PALIK.npy
