@@ -11,13 +11,10 @@ mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 mc = importlib.reload(mc)
 
-os.chdir(mv.sim_path_MAC + 'Gryzinski&Moller')
+os.chdir(mv.sim_path_MAC + 'Gryzinski')
 
 #%% Binding energies and occupancies
 ##            1s 2s 2p 3s 3p
-#binding_H  = {13.6: 1}
-#binding_C  = {296 : 2, 16.59: 2, 11.26: 2}
-#binding_O  = {538 : 2, 28.48: 2, 13.62: 4}
 binding_Si = [1844, 154, 104, 13.46, 8.15]
 occupancy_Si = [2, 2, 6, 2, 2]
 

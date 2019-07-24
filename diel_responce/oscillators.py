@@ -132,3 +132,7 @@ for i in range(len(E_arr)):
 
 #%%
 plt.loglog(E_arr, 1/IMFP_inv_arr_test * 1e+10, label='My')
+
+#%%
+E_DAPOR = E_arr
+U_DAPOR = IMFP_inv_arr_test * 1e-2
