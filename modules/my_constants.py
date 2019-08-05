@@ -33,11 +33,12 @@ rho_O = 1.429e-3
 n_O =  rho_O*Na/u_O
 
 Z_Si = 14
-u_Si = 28.08
+u_Si = 28.09
 rho_Si = 2.33
 n_Si =  rho_Si*Na/u_Si
 
-u_PMMA = 100
+Z_PMMA = 3.6
+u_PMMA = 100.12
 rho_PMMA = 1.18
 n_PMMA =  rho_PMMA*Na/u_PMMA
 n_PMMA_at = n_PMMA*(5 + 2 + 8)

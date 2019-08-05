@@ -125,13 +125,8 @@ for i in range(len(E_arr)):
         E_arr[i]*mc.eV) * Im_arr[inds] * L(E_arr[inds]/E_arr[i])
 
 #%%
-#IMFP_solid = np.loadtxt('curves/IMFP_solid.txt')
-#IMFP_dashed = np.loadtxt('curves/IMFP_dashed.txt')
-
-#plt.loglog(IMFP_solid[:, 0], IMFP_solid[:, 1], label='Dapor_solid')
-#plt.loglog(IMFP_dashed[:, 0], IMFP_dashed[:, 1], label='Dapor_dashed')
-
-plt.loglog(E_arr, 1/IMFP_inv_arr * 1e+2, label='My')
+#plt.loglog(E_arr, 1/IMFP_inv_arr * 1e+2, label='My')
+plt.loglog(E_arr, dEds_arr / mc.eV / 1e+2, label='My')
 
 #plt.xlim(10, 10000)
 #plt.ylim(1, 1000)
@@ -141,6 +136,10 @@ plt.ylabel('IMFP, $\AA$')
 plt.legend()
 plt.grid()
 plt.show()
+
+#%%
+U_SI_PALIK = IMFP_inv_arr * 1e+2
+SP_SI_PALIK = dEds_arr / mc.eV / 1e+2
 
 #%%
 sun_hui = np.loadtxt('curves/sun hui v chai.txt')
