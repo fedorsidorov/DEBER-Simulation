@@ -6,10 +6,12 @@ import my_functions as mf
 import my_variables as mv
 import my_constants as mc
 import matplotlib.pyplot as plt
+import E_loss_functions as elf
 
 mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 mc = importlib.reload(mc)
+elf = importlib.reload(elf)
 
 os.chdir(mv.sim_path_MAC + 'E_bind_PMMA')
 
@@ -17,154 +19,148 @@ os.chdir(mv.sim_path_MAC + 'E_bind_PMMA')
 EE = np.logspace(0, 4.4, 1000)
 
 SP_TOT = np.load('../diel_responce/Dapor/SP_PMMA_DAPOR.npy')
+SP_CORE = np.load('SP_PMMA_CORE.npy')
 
-
-
-
-
-
-
-
-
-
-#%%
-EE = np.logspace(0, 4.4, 1000)
-
-IM = np.zeros(len(EE))
-
-## En, Gn, An from dapor2015.pdf
-params = [
-        [19.46, 8.770, 100.0],
-        [25.84, 14.75, 286.5],
-        [300.0, 140.0, 80.0],
-        [550.0, 300.0, 55.0],
-        ]
-
-for arr in params:
-    
-    E, G, A, = arr
-    IM += A*G*EE / ((E**2 - EE**2)**2 + (G*EE)**2)
-
-plt.loglog(EE, IM, 'r.', label='oscillators')
-
-plt.title('Dapor Im[-1/eps]')
-plt.xlabel('E, eV')
-plt.ylabel('Im[-1/eps]')
-
-plt.ylim(1e-9, 1e+1)
-
-plt.legend()
-plt.grid()
-plt.show()
-
-#plt.savefig('oscillators_Dapor.png', dpi=300)
-
-#%%
-def L(x):
-    f = (1-x)*np.log(4/x) - 7/4*x + x**(3/2) - 33/32*x**2
-    return f
-
-def S(x):
-    f = np.log(1.166/x) - 3/4*x - x/4*np.log(4/x) + 1/2*x**(3/2) - x**2/16*np.log(4/x) - 31/48*x**2
-    return f
-
-#%%
-U = np.zeros(len(EE))
-SP = np.zeros(len(EE))
-
-U_DIFF = np.zeros((len(EE), len(EE)))
-
-for i in range(len(EE)):
-    
-    E = EE[i]
-    
-    inds = np.where(EE <= E/2)[0]
-    
-    y_U = IM[inds] * L(EE[inds]/E)
-    y_SP = IM[inds] * S(EE[inds]/E) * EE[inds]
-    
-    U[i] = mc.k_el * mc.m * mc.e**2 / (2 * np.pi * mc.hbar**2 * E) *\
-        np.trapz(y_U, x=EE[inds]) * 1e-2 ## cm^-1
-        
-    SP[i] = mc.k_el * mc.m * mc.e**2 / (np.pi * mc.hbar**2 * E) *\
-        np.trapz(y_SP, x=EE[inds]) * 1e-2 ## eV/cm
-    
-    U_DIFF[i, inds] = mc.k_el * mc.m * mc.e**2 / (2 * np.pi * mc.hbar**2 *\
-        EE[i]) * IM[inds] * L(EE[inds]/E) * 1e-2 ## eV^-1 cm^-1
-    
-
-#%%
-IMFP_solid = np.loadtxt('curves/IMFP_solid.txt')
-IMFP_dashed = np.loadtxt('curves/IMFP_dashed.txt')
-
-plt.loglog(IMFP_solid[:, 0], IMFP_solid[:, 1], label='Dapor_solid')
-plt.loglog(IMFP_dashed[:, 0], IMFP_dashed[:, 1], label='Dapor_dashed')
-
-plt.loglog(EE, 1/U * 1e+8, label='My')
-
-#plt.xlim(10, 10000)
-#plt.ylim(1, 1000)
-
-plt.xlabel('E, eV')
-plt.ylabel('IMFP, $\AA$')
-plt.legend()
-plt.grid()
-plt.show()
-
-#%%
-dEds_solid = np.loadtxt('curves/dEds_solid.txt')
-dEds_dashed = np.loadtxt('curves/dEds_dashed.txt')
-dEds_dotted = np.loadtxt('curves/dEds_dotted.txt')
-
-SP_TAHIR = np.loadtxt('curves/SP_Tahir.txt')
-
-plt.semilogx(dEds_solid[:, 0], dEds_solid[:, 1], label='Dapor_solid')
-plt.semilogx(dEds_dashed[:, 0], dEds_dashed[:, 1], label='Dapor_dashed')
-plt.semilogx(dEds_dotted[:, 0], dEds_dotted[:, 1], label='Dapor_dotted')
-
-plt.semilogx(SP_TAHIR[:, 0], SP_TAHIR[:, 1], 'ro', label='Tahir paper')
-
-plt.semilogx(EE, SP / 1e+8, label='My')
-plt.xlim(10, 10000)
-plt.ylim(0, 4)
+plt.loglog(EE, SP_TOT, label='core')
+plt.loglog(EE, SP_CORE, label='total')
 
 plt.title('PMMA stopping power')
-
 plt.xlabel('E, eV')
-plt.ylabel('SP, eV/$\AA$')
+plt.ylabel('SP, eV/cm')
+
+plt.xlim(1, 1e+5)
+plt.ylim(1e+3, 1e+9)
+
 plt.legend()
 plt.grid()
 plt.show()
 
-plt.savefig('PMMA_SP_Dapor_Tahir.png', dpi=300)
+#%%
+CA = np.loadtxt('curves/C.txt')
+C = mf.log_interp1d(CA[:, 0], CA[:, 1])(EE)
+
+plt.semilogx(EE, C, label='Aktary')
+
+plt.title('C(E)')
+plt.xlabel('e, eV')
+plt.ylabel('C(E)')
+
+plt.legend()
+plt.grid()
+plt.show()
+
+#plt.savefig('C(E).png', dpi=300)
 
 #%%
-IMFP_inv_arr_test = np.zeros(len(EE))
+UA = np.loadtxt('curves/U_bind.txt')
+U = mf.log_interp1d(UA[:, 0], UA[:, 1])(EE)
 
-for i in range(len(EE)):
-    
-    E = EE[i]
-    
-    inds = np.where(EE <= E/2)[0]
-    
-    y_IMFP = IM[inds] * L(EE[inds]/EE[i])
-    y_dEds = IM[inds] * S(EE[inds]/EE[i]) * EE[inds]*mc.eV
-    
-    IMFP_inv_arr_test[i] = np.trapz(U_DIFF[i, :], x=EE)
+plt.semilogx(EE, U, label='Aktary')
 
+plt.title('U$_{bind}$(E)')
+plt.xlabel('e, eV')
+plt.ylabel('U$_{bind}$(E)')
 
-plt.loglog(EE, 1/IMFP_inv_arr_test * 1e+8, label='My 2')
+plt.legend()
+plt.grid()
+plt.show()
 
-#%% Integrals
-U_INT = np.zeros((len(EE), len(EE)))
+#plt.savefig('U_bind(E).png', dpi=300)
 
-for i in range(len(EE)):
+#%%
+SP_VAL = SP_TOT - SP_CORE
+E_BIND = np.zeros(len(EE))
+#CC = np.zeros(len(EE))
+
+EB = np.logspace(-1, 1.5, 1000)
+
+for i in range(48, len(EE)):
     
-    integral = np.trapz(U_DIFF[i, :], x=EE)
+    mf.upd_progress_bar(i, len(EE))
     
-    if integral == 0:
-        continue
-    
-    for j in range(1, len(EE)):
+    for e in EB[::-1]:
         
-        U_INT[i, j] = np.trapz(U_DIFF[i, :j], x=EE[:j]) / integral
+        now_SP = elf.get_Gryzinski_SP([EE[i]], e, mc.n_PMMA, elf.n_val_PMMA)
+        
+        if now_SP > SP_VAL[i]:
+            E_BIND[i] = e
+#            CC[i] = SP_VAL[i] / now_SP
+            break
+
+#%%
+plt.semilogx(EE, E_BIND, label='My')
+
+plt.title('U$_{bind}$(E)')
+plt.xlabel('e, eV')
+plt.ylabel('U$_{bind}$(E)')
+
+plt.legend()
+plt.grid()
+plt.show()
+
+plt.savefig('My U_bind(E).png', dpi=300)
+
+#%%
+#plt.semilogx(EE, CC, label='My')
+#
+#plt.title('C(E)')
+#plt.xlabel('e, eV')
+#plt.ylabel('C(E)')
+#
+#plt.legend()
+#plt.grid()
+#plt.show()
+#
+#plt.savefig('My C(E).png', dpi=300)
+
+#%%
+SP_VAL_TEST = np.zeros(len(EE))
+
+for i in range(len(EE)):
+    
+    SP_VAL_TEST[i] = elf.get_Gryzinski_SP([EE[i]], E_BIND[i], mc.n_PMMA, elf.n_val_PMMA) ##* CC[i]
+
+
+plt.loglog(EE, SP_VAL, label='Difference')
+plt.loglog(EE, SP_VAL_TEST, '--', label='My')
+
+plt.title('SP$_{valence}(E)$')
+plt.xlabel('e, eV')
+plt.ylabel('SP$_{valence}$')
+
+plt.legend()
+plt.grid()
+plt.show()
+
+plt.savefig('SP_valence_no_C.png', dpi=300)
+
+#%%
+U_TOT = np.load('../diel_responce/Dapor/U_PMMA_DAPOR.npy')
+#U_CORE = np.load('U_PMMA_CORE.npy')
+U_CORE = elf.get_PMMA_Gryzinski_core_U(EE)
+
+E_BIND = np.load('E_BIND_PMMA.npy')
+CC = np.load('C_PMMA.npy')
+
+U_VAL = U_TOT - U_CORE
+U_VAL_TEST = np.zeros(len(EE))
+
+for i in range(len(EE)):
+    
+    U_VAL_TEST[i] = elf.get_Gryzinsky_CS([EE[i]], E_BIND[i]) *\
+        CC[i] * mc.n_PMMA * elf.n_val_PMMA
+
+plt.loglog(EE, U_VAL, label='Difference')
+plt.loglog(EE, U_VAL_TEST, '--', label='My')
+
+plt.title('$\mu_{valence}(E)$')
+plt.xlabel('e, eV')
+plt.ylabel('$\mu_{valence}$, cm$^{-1}$')
+
+plt.legend()
+plt.grid()
+plt.show()
+
+plt.savefig('U_valence.png', dpi=300)
+
+

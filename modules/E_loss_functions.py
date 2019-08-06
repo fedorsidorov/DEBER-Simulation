@@ -11,8 +11,7 @@ mf = importlib.reload(mf)
 mv = importlib.reload(mv)
 mc = importlib.reload(mc)
 
-os.chdir(mv.sim_path_MAC + 'E_loss')
-
+#os.chdir(mv.sim_path_MAC + 'E_loss')
 
 #%% Moller
 def get_Moller_diff_CS(E, W):
@@ -93,7 +92,7 @@ def get_Gryzinsky_CS(E, Ui):
 
 def get_Gryzinski_SP(E, Ui, conc, n_el):
     
-    W = np.logspace(0, 4.4, 1000)
+    W = np.logspace(-2, 4.4, 10000)
     
     Gryzinski_SP = np.zeros(len(E))
     
